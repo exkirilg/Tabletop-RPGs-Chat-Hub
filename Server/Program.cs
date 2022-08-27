@@ -1,3 +1,6 @@
+using DataAccess;
+using Domain.DataAccessInterfaces;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using Server.Hubs;
 using System.Reflection;
@@ -38,6 +41,11 @@ builder.Services.AddCors(options =>
             .AllowCredentials();
     });
 });
+builder.Services.AddDbContext<ChatHubContext>(options =>
+{
+    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"));
+});
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 var app = builder.Build();
 

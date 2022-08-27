@@ -4,7 +4,7 @@ public class Member
 {
     private string _name;
 
-    public Guid MemberId { get; } = Guid.NewGuid();
+    public Guid MemberId { get; init; } = Guid.NewGuid();
     public Chat Chat { get; init; }
     public string Name
     {
@@ -20,6 +20,9 @@ public class Member
         }
     }
 
+    private Member()
+    {
+    }
     public Member(Chat chat, string name)
     {
         ArgumentNullException.ThrowIfNull(chat, nameof(chat));
