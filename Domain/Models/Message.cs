@@ -13,7 +13,7 @@ public class Message : IComparable<Message>
     public Chat Chat { get; init; }
 
     [Required]
-    public Member Member { get; init; }
+    public Member Author { get; init; }
 
     [Required]
     public DateTime DateTimeCreated { get; init; } = DateTime.UtcNow;
@@ -23,15 +23,15 @@ public class Message : IComparable<Message>
     private Message()
     {
     }
-    public Message(Chat chat, Member member, string textContent)
+    public Message(Chat chat, Member author, string textContent)
     {
         ArgumentNullException.ThrowIfNull(chat, nameof(chat));
-        ArgumentNullException.ThrowIfNull(member, nameof(member));
+        ArgumentNullException.ThrowIfNull(author, nameof(author));
 
         if (string.IsNullOrWhiteSpace(textContent)) throw new ArgumentNullException(nameof(textContent));
 
         Chat = chat;
-        Member = member;
+        Author = author;
         TextContent = textContent;
     }
 
