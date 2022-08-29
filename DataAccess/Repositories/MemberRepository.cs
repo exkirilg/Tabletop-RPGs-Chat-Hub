@@ -10,7 +10,10 @@ public class MemberRepository : Repository<Member>, IMemberRepository
 
 	public override async Task<IEnumerable<Member>> GetAllAsync()
 	{
-		return await _context.Members.Include(m => m.Chat).ToListAsync();
+		return await _context.Members
+			.Include(m => m.Chat)
+			.OrderBy(m => m)
+			.ToListAsync();
 	}
 	public override async Task<Member> GetByIdAsync(Guid id)
 	{
@@ -28,10 +31,17 @@ public class MemberRepository : Repository<Member>, IMemberRepository
 
 	public override async Task<IEnumerable<Member>> GetAllByExpression(Expression<Func<Member, bool>> predicate)
 	{
-        return await _context.Members.Where(predicate).Include(m => m.Chat).ToListAsync();
+        return await _context.Members
+			.Where(predicate)
+			.OrderBy(m => m)
+			.Include(m => m.Chat)
+			.ToListAsync();
     }
 	public override async Task<Member?> GetFirstOrDefaultByExpression(Expression<Func<Member, bool>> predicate)
 	{
-        return await _context.Members.Where(predicate).Include(m => m.Chat).FirstOrDefaultAsync();
+        return await _context.Members
+			.Where(predicate)
+			.Include(m => m.Chat)
+			.FirstOrDefaultAsync();
     }
 }

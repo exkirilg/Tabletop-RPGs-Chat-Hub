@@ -10,7 +10,11 @@ public class MessageRepository : Repository<Message>, IMessageRepository
 
     public override async Task<IEnumerable<Message>> GetAllAsync()
     {
-        return await _context.Messages.Include(m => m.Chat).Include(m => m.Member).ToListAsync();
+        return await _context.Messages
+            .Include(m => m.Chat)
+            .OrderBy(m => m)
+            .Include(m => m.Member)
+            .ToListAsync();
     }
     public override async Task<Message> GetByIdAsync(Guid id)
     {
@@ -29,10 +33,19 @@ public class MessageRepository : Repository<Message>, IMessageRepository
 
     public override async Task<IEnumerable<Message>> GetAllByExpression(Expression<Func<Message, bool>> predicate)
     {
-        return await _context.Messages.Where(predicate).Include(m => m.Chat).Include(m => m.Member).ToListAsync();
+        return await _context.Messages
+            .Where(predicate)
+            .Include(m => m.Chat)
+            .OrderBy(m => m)
+            .Include(m => m.Member)
+            .ToListAsync();
     }
     public override async Task<Message?> GetFirstOrDefaultByExpression(Expression<Func<Message, bool>> predicate)
     {
-        return await _context.Messages.Where(predicate).Include(m => m.Chat).Include(m => m.Member).FirstOrDefaultAsync();
+        return await _context.Messages
+            .Where(predicate)
+            .Include(m => m.Chat)
+            .Include(m => m.Member)
+            .FirstOrDefaultAsync();
     }
 }

@@ -14,7 +14,7 @@ namespace DataAccess.Migrations
                 columns: table => new
                 {
                     ChatId = table.Column<Guid>(type: "uuid", nullable: false),
-                    Name = table.Column<string>(type: "text", nullable: false)
+                    Name = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -27,7 +27,7 @@ namespace DataAccess.Migrations
                 {
                     MemberId = table.Column<Guid>(type: "uuid", nullable: false),
                     ChatId = table.Column<Guid>(type: "uuid", nullable: false),
-                    Name = table.Column<string>(type: "text", nullable: false)
+                    Name = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -68,9 +68,27 @@ namespace DataAccess.Migrations
                 });
 
             migrationBuilder.CreateIndex(
+                name: "IX_Chats_ChatId",
+                table: "Chats",
+                column: "ChatId",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Chats_Name",
+                table: "Chats",
+                column: "Name",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Members_ChatId",
                 table: "Members",
                 column: "ChatId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Members_MemberId",
+                table: "Members",
+                column: "MemberId",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Messages_ChatId",
@@ -81,6 +99,12 @@ namespace DataAccess.Migrations
                 name: "IX_Messages_MemberId",
                 table: "Messages",
                 column: "MemberId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Messages_MessageId",
+                table: "Messages",
+                column: "MessageId",
+                unique: true);
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)

@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace DataAccess.Migrations
 {
     [DbContext(typeof(ChatHubContext))]
-    [Migration("20220827205459_Initial")]
+    [Migration("20220829083636_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -32,9 +32,16 @@ namespace DataAccess.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
 
                     b.HasKey("ChatId");
+
+                    b.HasIndex("ChatId")
+                        .IsUnique();
+
+                    b.HasIndex("Name")
+                        .IsUnique();
 
                     b.ToTable("Chats");
                 });
@@ -50,11 +57,15 @@ namespace DataAccess.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
 
                     b.HasKey("MemberId");
 
                     b.HasIndex("ChatId");
+
+                    b.HasIndex("MemberId")
+                        .IsUnique();
 
                     b.ToTable("Members");
                 });
@@ -83,6 +94,9 @@ namespace DataAccess.Migrations
                     b.HasIndex("ChatId");
 
                     b.HasIndex("MemberId");
+
+                    b.HasIndex("MessageId")
+                        .IsUnique();
 
                     b.ToTable("Messages");
                 });

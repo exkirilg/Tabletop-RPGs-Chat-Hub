@@ -30,9 +30,16 @@ namespace DataAccess.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
 
                     b.HasKey("ChatId");
+
+                    b.HasIndex("ChatId")
+                        .IsUnique();
+
+                    b.HasIndex("Name")
+                        .IsUnique();
 
                     b.ToTable("Chats");
                 });
@@ -48,11 +55,15 @@ namespace DataAccess.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
 
                     b.HasKey("MemberId");
 
                     b.HasIndex("ChatId");
+
+                    b.HasIndex("MemberId")
+                        .IsUnique();
 
                     b.ToTable("Members");
                 });
@@ -81,6 +92,9 @@ namespace DataAccess.Migrations
                     b.HasIndex("ChatId");
 
                     b.HasIndex("MemberId");
+
+                    b.HasIndex("MessageId")
+                        .IsUnique();
 
                     b.ToTable("Messages");
                 });

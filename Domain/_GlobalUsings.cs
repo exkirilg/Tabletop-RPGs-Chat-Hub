@@ -1,1 +1,2 @@
-﻿global using Domain.Models;
+﻿global using Domain.DTO;
+global using Domain.Models;
