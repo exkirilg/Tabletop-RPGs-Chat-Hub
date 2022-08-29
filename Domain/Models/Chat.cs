@@ -7,14 +7,17 @@ namespace Domain.Models;
 [Index(nameof(Name), IsUnique = true)]
 public class Chat : IComparable<Chat>
 {
+    public const int NameMinLength = 5;
+    public const int NameMaxLength = 100;
+
     private string _name;
 
     [Key]
     public Guid ChatId { get; init; } = Guid.NewGuid();
 
-    [Required(AllowEmptyStrings = false, ErrorMessage = "Name is required")]
-    [MaxLength(100, ErrorMessage = "Name cannot be longer than 100 symbols")]
-    [MinLength(10, ErrorMessage = "Name must be at least 10 symbols long")]
+    [Required(AllowEmptyStrings = false)]
+    [MinLength(NameMinLength)]
+    [MaxLength(NameMaxLength)]
     public string Name
     {
         get => _name;
