@@ -13,7 +13,7 @@ public class MessageRepository : Repository<Message>, IMessageRepository
         return await _context.Messages
             .Include(m => m.Chat)
             .OrderBy(m => m)
-            .Include(m => m.Member)
+            .Include(m => m.Author)
             .ToListAsync();
     }
     public override async Task<Message> GetByIdAsync(Guid id)
@@ -26,7 +26,7 @@ public class MessageRepository : Repository<Message>, IMessageRepository
         }
 
         await _context.Entry(msg).Reference(nameof(msg.Chat)).LoadAsync();
-        await _context.Entry(msg).Reference(nameof(msg.Member)).LoadAsync();
+        await _context.Entry(msg).Reference(nameof(msg.Author)).LoadAsync();
 
         return msg;
     }
@@ -37,7 +37,7 @@ public class MessageRepository : Repository<Message>, IMessageRepository
             .Where(predicate)
             .Include(m => m.Chat)
             .OrderBy(m => m)
-            .Include(m => m.Member)
+            .Include(m => m.Author)
             .ToListAsync();
     }
     public override async Task<Message?> GetFirstOrDefaultByExpression(Expression<Func<Message, bool>> predicate)
@@ -45,7 +45,7 @@ public class MessageRepository : Repository<Message>, IMessageRepository
         return await _context.Messages
             .Where(predicate)
             .Include(m => m.Chat)
-            .Include(m => m.Member)
+            .Include(m => m.Author)
             .FirstOrDefaultAsync();
     }
 }
