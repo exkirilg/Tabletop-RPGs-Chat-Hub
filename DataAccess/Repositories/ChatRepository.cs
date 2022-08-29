@@ -19,9 +19,8 @@ public class ChatRepository : Repository<Chat>, IChatRepository
             .Take(numberOfChats)
             .ToListAsync();
     }
-    public async Task<Chat?> GetFirstOrDefaultByNameAsync(string name)
+    public async Task<bool> ChatExistsAsync(string name)
     {
-        return await _context.Chats
-            .FirstOrDefaultAsync(c => c.Name.Equals(name));
+        return await _context.Chats.AnyAsync(chat => chat.Name.Equals(name));
     }
 }
