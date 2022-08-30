@@ -8,6 +8,5 @@ public class ChatHubContext : DbContext
 
     public ChatHubContext(DbContextOptions<ChatHubContext> options) : base(options)
     {
-        Database.EnsureCreated();
     }
 }
