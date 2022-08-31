@@ -104,7 +104,6 @@ public class IdentityController : ControllerBase
         {
             Issuer = _configuration["Auth:Issuer"],
             Audience = _configuration["Auth:Audience"],
-            Expires = DateTime.UtcNow.AddMonths(1),
             Subject = new ClaimsIdentity(claims),
             SigningCredentials = signingCredentials
         };
