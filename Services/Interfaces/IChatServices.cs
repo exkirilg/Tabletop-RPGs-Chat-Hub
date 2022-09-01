@@ -4,6 +4,7 @@ namespace Services.Interfaces;
 
 public interface IChatServices
 {
+    public Task<int> GetNumberOfChatsAsync();
     public Task<IEnumerable<Chat>> GetChatsAsync(int numberOfChats, string? search);
     public Task<Chat> CreateNewChatAsync(string chatName);
     public Task RemoveChatAsync(Guid chatId);

@@ -14,7 +14,12 @@ public class ChatServices : IChatServices
 		_unitOfWork = unitOfWork;
 	}
 
-	public async Task<IEnumerable<Chat>> GetChatsAsync(int numberOfChats, string? search)
+    public async Task<int> GetNumberOfChatsAsync()
+    {
+        return await _unitOfWork.ChatRepository.GetNumberOfChats();
+    }
+
+    public async Task<IEnumerable<Chat>> GetChatsAsync(int numberOfChats, string? search)
 	{
         if (search is not null)
         {

@@ -14,21 +14,38 @@ public class ChatHubController : ControllerBase
     private const int defNumberOfChats = 12;
 
     private readonly IChatServices _chatServices;
+    private readonly IIdentityServices _identityServices;
 
-    public ChatHubController(IChatServices chatServices)
+    public ChatHubController(IChatServices chatServices, IIdentityServices identityServices)
     {
         _chatServices = chatServices;
+        _identityServices = identityServices;
     }
 
     /// <summary>
-    /// Returns list of active chats
+    /// 
+    /// </summary>
+    /// <returns></returns>
+    /// <response code="200"></response>
+    [HttpGet("statistics")]
+    public async Task<IActionResult> GetStatistics()
+    {
+        return Ok(
+            new StatisticsDTO(
+                await _chatServices.GetNumberOfChatsAsync(),
+                await _identityServices.GetNumberOfUsersAsync()
+            ));
+    }
+
+    /// <summary>
+    /// Returns list of chats
     /// </summary>
     /// <param name="numberOfChats"></param>
     /// <param name="search"></param>
     /// <returns></returns>
     /// <response code="200"></response>
-    [HttpGet("ActiveChats")]
-    public async Task<IActionResult> GetActiveChats(
+    [HttpGet("chats")]
+    public async Task<IActionResult> GetChats(
         [FromQuery] int numberOfChats = defNumberOfChats, [FromQuery] string? search = null)
     {
         return Ok((await _chatServices.GetChatsAsync(numberOfChats, search)).Select(chat => chat.ToDTO()));
@@ -55,9 +72,10 @@ public class ChatHubController : ControllerBase
             ModelState.AddModelError(nameof(request.Name), ex.Message);
             return ValidationProblem();
         }
-        catch
+        catch (Exception ex)
         {
-            return BadRequest();
+            ModelState.AddModelError("Chat", ex.Message);
+            return ValidationProblem();
         }
 
         return Ok(chat.ToDTO());

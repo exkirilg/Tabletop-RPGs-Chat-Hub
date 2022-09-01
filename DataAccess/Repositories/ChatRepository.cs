@@ -6,6 +6,11 @@ public class ChatRepository : Repository<Chat>, IChatRepository
 	{
 	}
 
+    public async Task<int> GetNumberOfChats()
+    {
+        return await _context.Chats.CountAsync();
+    }
+
     public async Task<IEnumerable<Chat>> GetSpecificNumberOfChatsAsync(int numberOfChats)
     {
         return await _context.Chats

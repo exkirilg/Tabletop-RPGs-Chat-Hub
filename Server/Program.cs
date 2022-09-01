@@ -93,6 +93,7 @@ builder.Services.AddDbContext<ChatHubContext>(options =>
 });
 
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+builder.Services.AddScoped<IIdentityServices, IdentityServices>();
 builder.Services.AddScoped<IChatServices, ChatServices>();
 
 var app = builder.Build();
