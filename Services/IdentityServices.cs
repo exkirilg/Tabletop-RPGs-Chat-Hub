@@ -57,10 +57,10 @@ public class IdentityServices : IIdentityServices
             var msg = string.Empty;
             foreach (var error in result.Errors)
             {
-                msg += $"\n{error.Description}";
+                msg += (string.IsNullOrEmpty(msg) ? string.Empty : " ") + error.Description;
             }
 
-            throw new SignUpException($"Wasn't able to sign up:{msg}");
+            throw new SignUpException(string.IsNullOrEmpty(msg) ? "Wasn't able to sign up" : msg);
         }
 
         return new SignInResponseDTO(CreateAccessToken(GetUserClaims(user)), user.UserName);
