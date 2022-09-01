@@ -24,11 +24,6 @@ public class IdentityServices : IIdentityServices
         _signInManager = signInManager;
     }
 
-    public async Task<int> GetNumberOfUsersAsync()
-    {
-        return await Task.Run(() => _userManager.Users.Count());
-    }
-
     public async Task<SignInResponseDTO> SignInAsync(SignInRequestDTO request)
     {
         var user = await _userManager.FindByEmailAsync(request.Email);

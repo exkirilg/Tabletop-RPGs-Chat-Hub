@@ -3,30 +3,17 @@ using Services.Interfaces;
 
 namespace Server.Hubs;
 
-public class ChatHub : Hub
+public partial class ChatHub : Hub
 {
-    public const string ReceiveChatsInfoMethod = "ReceiveChatsInfo";
-
+    private readonly IStatisticsServices _statisticsServices;
+    private readonly IIdentityServices _identityServices;
     private readonly IChatServices _chatServices;
 
-    public ChatHub(IChatServices chatServices)
+    public ChatHub(IStatisticsServices statisticsServices, IIdentityServices identityServices, IChatServices chatServices)
     {
+        _statisticsServices = statisticsServices;
+        _identityServices = identityServices;
         _chatServices = chatServices;
-    }
-
-    public async Task ChatsInfoRequest(int numberOfChats, string? search = default)
-    {
-        await SendChatsInfo(numberOfChats, search);
-    }
-
-    private async Task SendChatsInfo(int numberOfChats, string? search)
-    {
-        await Clients
-            .Client(Context.ConnectionId)
-            .SendAsync(
-                ReceiveChatsInfoMethod,
-                (await _chatServices.GetChatsAsync(numberOfChats, search)).Select(chat => chat.ToDTO())
-            );
     }
 
     public override async Task OnConnectedAsync()

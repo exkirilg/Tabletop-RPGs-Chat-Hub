@@ -13,28 +13,11 @@ public class ChatHubController : ControllerBase
 {
     private const int defNumberOfChats = 12;
 
-    private readonly IChatServices _chatServices;
-    private readonly IIdentityServices _identityServices;
+    private readonly IChatServices _services;
 
-    public ChatHubController(IChatServices chatServices, IIdentityServices identityServices)
+    public ChatHubController(IChatServices services)
     {
-        _chatServices = chatServices;
-        _identityServices = identityServices;
-    }
-
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <returns></returns>
-    /// <response code="200"></response>
-    [HttpGet("statistics")]
-    public async Task<IActionResult> GetStatistics()
-    {
-        return Ok(
-            new StatisticsDTO(
-                await _chatServices.GetNumberOfChatsAsync(),
-                await _identityServices.GetNumberOfUsersAsync()
-            ));
+        _services = services;
     }
 
     /// <summary>
@@ -48,7 +31,7 @@ public class ChatHubController : ControllerBase
     public async Task<IActionResult> GetChats(
         [FromQuery] int numberOfChats = defNumberOfChats, [FromQuery] string? search = null)
     {
-        return Ok((await _chatServices.GetChatsAsync(numberOfChats, search)).Select(chat => chat.ToDTO()));
+        return Ok((await _services.GetChatsAsync(numberOfChats, search)).Select(chat => chat.ToDTO()));
     }
         
     /// <summary>
@@ -65,7 +48,7 @@ public class ChatHubController : ControllerBase
 
         try
         {
-            chat = await _chatServices.CreateNewChatAsync(request.Name);
+            chat = await _services.CreateNewChatAsync(request.Name);
         }
         catch (ChatAlreadyExistsException ex)
         {

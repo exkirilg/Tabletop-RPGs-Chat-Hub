@@ -8,11 +8,11 @@ namespace Server.Controllers;
 [ApiController]
 public class IdentityController : ControllerBase
 {
-    private readonly IIdentityServices _identityServices;
+    private readonly IIdentityServices _services;
 
-    public IdentityController(IIdentityServices identityServices)
+    public IdentityController(IIdentityServices services)
     {
-        _identityServices = identityServices;
+        _services = services;
     }
 
     /// <summary>
@@ -34,7 +34,7 @@ public class IdentityController : ControllerBase
 
         try
         {
-            result = await _identityServices.SignInAsync(request);
+            result = await _services.SignInAsync(request);
         }
         catch (Exception ex)
         {
@@ -64,7 +64,7 @@ public class IdentityController : ControllerBase
 
         try
         {
-            result = await _identityServices.SignUpAsync(request);
+            result = await _services.SignUpAsync(request);
         }
         catch (Exception ex)
         {
