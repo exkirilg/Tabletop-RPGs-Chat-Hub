@@ -6,14 +6,15 @@ namespace Server.Hubs;
 public partial class ChatHub : Hub
 {
     private readonly IStatisticsServices _statisticsServices;
-    private readonly IIdentityServices _identityServices;
     private readonly IChatServices _chatServices;
 
-    public ChatHub(IStatisticsServices statisticsServices, IIdentityServices identityServices, IChatServices chatServices)
+    private readonly ChatHubBroadcast _broadcast;
+
+    public ChatHub(IStatisticsServices statisticsServices, IChatServices chatServices, ChatHubBroadcast broadcast)
     {
         _statisticsServices = statisticsServices;
-        _identityServices = identityServices;
         _chatServices = chatServices;
+        _broadcast = broadcast;
     }
 
     public override async Task OnConnectedAsync()

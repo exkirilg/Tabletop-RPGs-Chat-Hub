@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
+using Services.CustomEventsArguments;
 using Services.CustomExceptions;
 using Services.Interfaces;
 using System.IdentityModel.Tokens.Jwt;
@@ -16,12 +17,18 @@ public class IdentityServices : IIdentityServices
     private readonly UserManager<IdentityUser> _userManager;
     private readonly SignInManager<IdentityUser> _signInManager;
 
+    private readonly INotificationsServices _notificationsServices;
+    private readonly IStatisticsServices _statisticsServices;
+
     public IdentityServices(IConfiguration configuration,
-        UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager)
+        UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager,
+        INotificationsServices notificationsServices, IStatisticsServices statisticsServices)
     {
         _configuration = configuration;
         _userManager = userManager;
         _signInManager = signInManager;
+        _notificationsServices = notificationsServices;
+        _statisticsServices = statisticsServices;
     }
 
     public async Task<SignInResponseDTO> SignInAsync(SignInRequestDTO request)
@@ -58,6 +65,8 @@ public class IdentityServices : IIdentityServices
             throw new SignUpException(string.IsNullOrEmpty(msg) ? "Wasn't able to sign up" : msg);
         }
 
+        await OnUsersChanged();
+
         return new SignInResponseDTO(CreateAccessToken(GetUserClaims(user)), user.UserName);
     }
 
@@ -88,5 +97,12 @@ public class IdentityServices : IIdentityServices
 
         var token = handler.CreateJwtSecurityToken(descriptor);
         return handler.WriteToken(token);
+    }
+
+    private async Task OnUsersChanged()
+    {
+        _notificationsServices.InvokeStatisticsChanged(
+            this,
+            new StatisticsChangedEventArgs(await _statisticsServices.GetStatistics()));
     }
 }

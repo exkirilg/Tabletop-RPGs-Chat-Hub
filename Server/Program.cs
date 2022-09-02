@@ -93,9 +93,14 @@ builder.Services.AddDbContext<ChatHubContext>(options =>
 });
 
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+builder.Services.AddSingleton<INotificationsServices, NotificationsServices>();
+
 builder.Services.AddScoped<IStatisticsServices, StatisticsServices>();
 builder.Services.AddScoped<IIdentityServices, IdentityServices>();
 builder.Services.AddScoped<IChatServices, ChatServices>();
+
+builder.Services.AddSingleton<ChatHubBroadcast>();
 
 var app = builder.Build();
 
