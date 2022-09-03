@@ -9,20 +9,26 @@ public partial class ChatHub : Hub
     private readonly IChatServices _chatServices;
 
     private readonly ChatHubBroadcast _broadcast;
+    private readonly State _state;
 
-    public ChatHub(IStatisticsServices statisticsServices, IChatServices chatServices, ChatHubBroadcast broadcast)
+    public ChatHub(IStatisticsServices statisticsServices, IChatServices chatServices, ChatHubBroadcast broadcast, State state)
     {
         _statisticsServices = statisticsServices;
         _chatServices = chatServices;
         _broadcast = broadcast;
+        _state = state;
     }
 
     public override async Task OnConnectedAsync()
     {
+        _state.AddConnectionSettings(Context.ConnectionId);
+
         await base.OnConnectedAsync();
     }
     public override async Task OnDisconnectedAsync(Exception? exception)
     {
+        _state.RemoveConnectionSettings(Context.ConnectionId);
+
         await base.OnDisconnectedAsync(exception);
     }
 }

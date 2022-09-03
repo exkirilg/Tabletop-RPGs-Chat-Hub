@@ -8,6 +8,10 @@ public partial class ChatHub
 
     public async Task ChatsInfoRequest(int numberOfChats, string? search = default)
     {
+        var settings = _state.GetConnectionSettings(Context.ConnectionId);
+        settings.NumberOfChats = numberOfChats;
+        settings.ChatsSearch = search;
+
         await SendChatsInfoToCurrentConnection(numberOfChats, search);
     }
 

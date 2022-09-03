@@ -8,7 +8,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-namespace DataAccess.Migrations
+namespace DataAccess.Migrations.ChatHub
 {
     [DbContext(typeof(ChatHubContext))]
     partial class ChatHubContextModelSnapshot : ModelSnapshot
@@ -27,6 +27,14 @@ namespace DataAccess.Migrations
                     b.Property<Guid>("ChatId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
+
+                    b.Property<string>("Author")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(150)
+                        .HasColumnType("character varying(150)");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -74,14 +82,14 @@ namespace DataAccess.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
+                    b.Property<Guid>("AuthorMemberId")
+                        .HasColumnType("uuid");
+
                     b.Property<Guid>("ChatId")
                         .HasColumnType("uuid");
 
                     b.Property<DateTime>("DateTimeCreated")
                         .HasColumnType("timestamp with time zone");
-
-                    b.Property<Guid>("MemberId")
-                        .HasColumnType("uuid");
 
                     b.Property<string>("TextContent")
                         .IsRequired()
@@ -89,9 +97,9 @@ namespace DataAccess.Migrations
 
                     b.HasKey("MessageId");
 
-                    b.HasIndex("ChatId");
+                    b.HasIndex("AuthorMemberId");
 
-                    b.HasIndex("MemberId");
+                    b.HasIndex("ChatId");
 
                     b.HasIndex("MessageId")
                         .IsUnique();
@@ -112,21 +120,21 @@ namespace DataAccess.Migrations
 
             modelBuilder.Entity("Domain.Models.Message", b =>
                 {
+                    b.HasOne("Domain.Models.Member", "Author")
+                        .WithMany()
+                        .HasForeignKey("AuthorMemberId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("Domain.Models.Chat", "Chat")
                         .WithMany()
                         .HasForeignKey("ChatId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Domain.Models.Member", "Member")
-                        .WithMany()
-                        .HasForeignKey("MemberId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.Navigation("Author");
 
                     b.Navigation("Chat");
-
-                    b.Navigation("Member");
                 });
 #pragma warning restore 612, 618
         }

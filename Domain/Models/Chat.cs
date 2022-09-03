@@ -9,6 +9,7 @@ public class Chat : IComparable<Chat>
 {
     public const int NameMinLength = 5;
     public const int NameMaxLength = 100;
+    public const int DescriptionMaxLength = 250;
 
     private string _name;
 
@@ -29,17 +30,23 @@ public class Chat : IComparable<Chat>
         }
     }
 
+    public string Author { get; init; }
+
+    [MaxLength(DescriptionMaxLength)]
+    public string? Description { get; set; }
+
     private Chat()
     {
     }
-    public Chat(string name)
+    public Chat(string name, string author)
     {
         Name = name;
+        Author = author;
     }
     
     public ChatDTO ToDTO()
     {
-        return new ChatDTO(ChatId, Name);
+        return new ChatDTO(ChatId, Name, Author, Description ?? string.Empty);
     }
     public int CompareTo(Chat? other)
     {

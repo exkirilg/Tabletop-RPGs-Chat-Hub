@@ -19,6 +19,11 @@ public class ChatServices : IChatServices
         _statisticsServices = statisticsServices;
     }
 
+    public async Task<IEnumerable<Chat>> GetAllChatsAsync()
+    {
+        return await _unitOfWork.ChatRepository.GetAllAsync();
+    }
+
     public async Task<IEnumerable<Chat>> GetChatsAsync(int numberOfChats, string? search)
 	{
         if (search is not null)
@@ -29,14 +34,18 @@ public class ChatServices : IChatServices
         return await _unitOfWork.ChatRepository.GetSpecificNumberOfChatsAsync(numberOfChats);
     }
 
-    public async Task<Chat> CreateNewChatAsync(string chatName)
+    public async Task<Chat> CreateNewChatAsync(string name, string author, string description)
     {
-        if (await _unitOfWork.ChatRepository.ChatExistsAsync(chatName))
+        if (await _unitOfWork.ChatRepository.ChatExistsAsync(name))
         {
-            throw new ChatAlreadyExistsException($"Chat with name {chatName} already exists");
+            throw new ChatAlreadyExistsException($"Chat with name {name} already exists");
         }
 
-        Chat chat = new(chatName);
+        Chat chat = new(name, author);
+        if (string.IsNullOrWhiteSpace(description) == false)
+        {
+            chat.Description = description;
+        }
 
         await _unitOfWork.ChatRepository.AddAsync(chat);
         await _unitOfWork.CompleteAsync();
@@ -58,5 +67,9 @@ public class ChatServices : IChatServices
         _notificationsServices.InvokeStatisticsChanged(
             this,
             new StatisticsChangedEventArgs(await _statisticsServices.GetStatistics()));
+
+        _notificationsServices.InvokeChatsChanged(
+            this,
+            new ChatsChangedEventArgs(await GetAllChatsAsync()));
     }
 }

@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace DataAccess.Migrations
+namespace DataAccess.Migrations.ChatHub
 {
     public partial class Initial : Migration
     {
@@ -14,7 +14,9 @@ namespace DataAccess.Migrations
                 columns: table => new
                 {
                     ChatId = table.Column<Guid>(type: "uuid", nullable: false),
-                    Name = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false)
+                    Name = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    Author = table.Column<string>(type: "text", nullable: false),
+                    Description = table.Column<string>(type: "character varying(150)", maxLength: 150, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -46,7 +48,7 @@ namespace DataAccess.Migrations
                 {
                     MessageId = table.Column<Guid>(type: "uuid", nullable: false),
                     ChatId = table.Column<Guid>(type: "uuid", nullable: false),
-                    MemberId = table.Column<Guid>(type: "uuid", nullable: false),
+                    AuthorMemberId = table.Column<Guid>(type: "uuid", nullable: false),
                     DateTimeCreated = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     TextContent = table.Column<string>(type: "text", nullable: false)
                 },
@@ -60,8 +62,8 @@ namespace DataAccess.Migrations
                         principalColumn: "ChatId",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Messages_Members_MemberId",
-                        column: x => x.MemberId,
+                        name: "FK_Messages_Members_AuthorMemberId",
+                        column: x => x.AuthorMemberId,
                         principalTable: "Members",
                         principalColumn: "MemberId",
                         onDelete: ReferentialAction.Cascade);
@@ -91,14 +93,14 @@ namespace DataAccess.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
+                name: "IX_Messages_AuthorMemberId",
+                table: "Messages",
+                column: "AuthorMemberId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Messages_ChatId",
                 table: "Messages",
                 column: "ChatId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Messages_MemberId",
-                table: "Messages",
-                column: "MemberId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Messages_MessageId",

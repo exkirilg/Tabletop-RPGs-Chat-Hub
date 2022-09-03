@@ -1,5 +1,7 @@
 ﻿using Domain.DTO;
 using Domain.Models;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Services.CustomExceptions;
@@ -14,10 +16,12 @@ public class ChatHubController : ControllerBase
     private const int defNumberOfChats = 12;
 
     private readonly IChatServices _services;
+    private readonly UserManager<IdentityUser> _userManager;
 
-    public ChatHubController(IChatServices services)
+    public ChatHubController(IChatServices services, UserManager<IdentityUser> userManager)
     {
         _services = services;
+        _userManager = userManager;
     }
 
     /// <summary>
@@ -33,7 +37,7 @@ public class ChatHubController : ControllerBase
     {
         return Ok((await _services.GetChatsAsync(numberOfChats, search)).Select(chat => chat.ToDTO()));
     }
-        
+
     /// <summary>
     /// Creates new chat and returns it's value
     /// </summary>
@@ -41,14 +45,16 @@ public class ChatHubController : ControllerBase
     /// <returns></returns>
     /// <response code="200"></response>
     /// <response code="400">In case of validation error or if chat with specified name already exists</response>
+    /// <response code="401">If unauthorized</response>
     [HttpPost("[action]")]
+    [Authorize]
     public async Task<IActionResult> CreateNewChat([FromBody(EmptyBodyBehavior = EmptyBodyBehavior.Disallow)] NewChatRequestDTO request)
     {
         Chat chat;
 
         try
         {
-            chat = await _services.CreateNewChatAsync(request.Name);
+            chat = await _services.CreateNewChatAsync(request.Name, User.Identity!.Name!, request.Description);
         }
         catch (ChatAlreadyExistsException ex)
         {

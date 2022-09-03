@@ -8,4 +8,7 @@ public record struct NewChatRequestDTO
     [MaxLength(Chat.NameMaxLength)]
     [MinLength(Chat.NameMinLength)]
     public string Name { get; init; }
+
+    [MaxLength(Chat.DescriptionMaxLength)]
+    public string Description { get; init; }
 }
