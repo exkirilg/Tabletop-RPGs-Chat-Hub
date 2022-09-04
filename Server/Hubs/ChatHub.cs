@@ -5,6 +5,8 @@ namespace Server.Hubs;
 
 public partial class ChatHub : Hub
 {
+    public const int MaxNumberOfOwnChats = 4;
+
     private readonly IStatisticsServices _statisticsServices;
     private readonly IChatServices _chatServices;
 

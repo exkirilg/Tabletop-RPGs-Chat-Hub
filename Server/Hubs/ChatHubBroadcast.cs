@@ -31,6 +31,10 @@ public class ChatHubBroadcast
             var connectionSettings = _state.GetConnectionSettings(connectionId);
 
             var chats = e.Chats;
+            if (string.IsNullOrWhiteSpace(connectionSettings.ChatsSearch) == false)
+            {
+                chats = chats.Where(chat => chat.Name.ToLower().Contains(connectionSettings.ChatsSearch.ToLower().Trim()));
+            }
             if (connectionSettings.NumberOfChats is not null)
             {
                 chats = chats.Take((int)connectionSettings.NumberOfChats);

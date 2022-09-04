@@ -19,6 +19,11 @@ public class ChatServices : IChatServices
         _statisticsServices = statisticsServices;
     }
 
+    public async Task<int> GetNumberOfChatsByAuthorAsync(string author)
+    {
+        return await _unitOfWork.ChatRepository.GetNumberOfChatsByAuthorAsync(author);
+    }
+
     public async Task<IEnumerable<Chat>> GetAllChatsAsync()
     {
         return await _unitOfWork.ChatRepository.GetAllAsync();
@@ -32,6 +37,21 @@ public class ChatServices : IChatServices
         }
         
         return await _unitOfWork.ChatRepository.GetSpecificNumberOfChatsAsync(numberOfChats);
+    }
+
+    public async Task<IEnumerable<Chat>> GetChatsByAuthorAsync(string author)
+    {
+        return await _unitOfWork.ChatRepository.GetSpecificNumberOfChatsByAuthorAsync(author);
+    }
+
+    public async Task<IEnumerable<Chat>> GetChatsByOtherAuthorsAsync(string author, int numberOfChats, string? search)
+    {
+        if (search is not null)
+        {
+            return await _unitOfWork.ChatRepository.GetSpecificNumberOfChatsByOtherAuthorsWithNameSearchAsync(author, numberOfChats, search);
+        }
+
+        return await _unitOfWork.ChatRepository.GetSpecificNumberOfChatsByOtherAuthorsAsync(author, numberOfChats);
     }
 
     public async Task<Chat> CreateNewChatAsync(string name, string author, string description)

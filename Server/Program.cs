@@ -141,6 +141,8 @@ app.UseSwaggerUI(options =>
     options.SwaggerEndpoint("v1.0.0/swagger.json", "TtRPGs Chat-Hub Server API v1.0.0");
 });
 
+app.UseMiddleware<AuthMiddleware>();
+
 app.UseAuthentication();
 app.UseAuthorization();
 

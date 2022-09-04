@@ -19,7 +19,7 @@ public class StatisticsServices : IStatisticsServices
     public async Task<StatisticsDTO> GetStatistics()
     {
         return new(
-            await _unitOfWork.ChatRepository.GetNumberOfChats(),
+            await _unitOfWork.ChatRepository.GetNumberOfChatsAsync(),
             await Task.Run(() => _userManager.Users.Count()));
     }
 }

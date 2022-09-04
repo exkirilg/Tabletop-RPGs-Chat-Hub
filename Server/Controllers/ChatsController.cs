@@ -1,9 +1,9 @@
 ﻿using Domain.DTO;
 using Domain.Models;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Server.Hubs;
 using Services.CustomExceptions;
 using Services.Interfaces;
 
@@ -11,17 +11,15 @@ namespace Server.Controllers;
 
 [Route("api/chats")]
 [ApiController]
-public class ChatHubController : ControllerBase
+public class ChatsController : ControllerBase
 {
     private const int defNumberOfChats = 12;
 
     private readonly IChatServices _services;
-    private readonly UserManager<IdentityUser> _userManager;
 
-    public ChatHubController(IChatServices services, UserManager<IdentityUser> userManager)
+    public ChatsController(IChatServices services)
     {
         _services = services;
-        _userManager = userManager;
     }
 
     /// <summary>
@@ -31,7 +29,7 @@ public class ChatHubController : ControllerBase
     /// <param name="search"></param>
     /// <returns></returns>
     /// <response code="200"></response>
-    [HttpGet("chats")]
+    [HttpGet()]
     public async Task<IActionResult> GetChats(
         [FromQuery] int numberOfChats = defNumberOfChats, [FromQuery] string? search = null)
     {
@@ -39,18 +37,54 @@ public class ChatHubController : ControllerBase
     }
 
     /// <summary>
-    /// Creates new chat and returns it's value
+    /// Returns list of own chats
+    /// </summary>
+    /// <returns></returns>
+    /// <response code="200"></response>
+    /// <response code="401"></response>
+    [HttpGet("own")]
+    [Authorize]
+    public async Task<IActionResult> GetOwnChats()
+    {
+        return Ok((await _services.GetChatsByAuthorAsync(User.Identity!.Name!)).Select(chat => chat.ToDTO()));
+    }
+
+    /// <summary>
+    /// Returns list of others chats
+    /// </summary>
+    /// <param name="numberOfChats"></param>
+    /// <param name="search"></param>
+    /// <returns></returns>
+    /// <response code="200"></response>
+    /// <response code="401"></response>
+    [HttpGet("others")]
+    [Authorize]
+    public async Task<IActionResult> GetOthersChats(
+        [FromQuery] int numberOfChats = defNumberOfChats, [FromQuery] string? search = null)
+    {
+        return Ok((await _services.GetChatsByOtherAuthorsAsync(User.Identity!.Name!, numberOfChats, search)).Select(chat => chat.ToDTO()));
+    }
+
+    /// <summary>
+    /// Creates new chat and returns it's values
     /// </summary>
     /// <param name="request"></param>
     /// <returns></returns>
     /// <response code="200"></response>
     /// <response code="400">In case of validation error or if chat with specified name already exists</response>
     /// <response code="401">If unauthorized</response>
-    [HttpPost("[action]")]
+    [HttpPost("new")]
     [Authorize]
     public async Task<IActionResult> CreateNewChat([FromBody(EmptyBodyBehavior = EmptyBodyBehavior.Disallow)] NewChatRequestDTO request)
     {
         Chat chat;
+
+        var numberOfOwnChats = await _services.GetNumberOfChatsByAuthorAsync(User.Identity!.Name!);
+        if (numberOfOwnChats >= ChatHub.MaxNumberOfOwnChats)
+        {
+            ModelState.AddModelError("MaxNumberOfOwnChats", "Maximal number of owned chats will be exceeded");
+            return ValidationProblem();
+        }
 
         try
         {
