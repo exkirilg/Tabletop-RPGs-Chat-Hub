@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.SignalR;
+﻿using Domain.DTO;
+using Domain.Models;
+using Microsoft.AspNetCore.SignalR;
 using Services.CustomEventsArguments;
 using Services.Interfaces;
 
@@ -30,19 +32,62 @@ public class ChatHubBroadcast
         {
             var connectionSettings = _state.GetConnectionSettings(connectionId);
 
-            var chats = e.Chats;
-            if (string.IsNullOrWhiteSpace(connectionSettings.ChatsSearch) == false)
+            if (connectionSettings.UserName is null)
             {
-                chats = chats.Where(chat => chat.Name.ToLower().Contains(connectionSettings.ChatsSearch.ToLower().Trim()));
+                await SendChatsInfoToUnauthenticatedUser(connectionId, e.Chats, connectionSettings.NumberOfChats, connectionSettings.ChatsSearch);
             }
-            if (connectionSettings.NumberOfChats is not null)
+            else
             {
-                chats = chats.Take((int)connectionSettings.NumberOfChats);
+                await SendChatsInfoToAuthenticatedUser(connectionId, connectionSettings.UserName, e.Chats, connectionSettings.NumberOfChats, connectionSettings.ChatsSearch);
             }
-
-            await _hubContext.Clients.Client(connectionId).SendAsync(
-                ChatHub.ReceiveChatsInfoMethod,
-                chats.Select(chat => chat.ToDTO()));
         }
+    }
+
+    private async Task SendChatsInfoToUnauthenticatedUser(string connectionId, IEnumerable<Chat> chats, int? numberOfChats, string? search)
+    {
+        IEnumerable<Chat> chatsInfo = new List<Chat>(chats);
+
+        if (string.IsNullOrWhiteSpace(search) == false)
+        {
+            chatsInfo = chatsInfo.Where(chat => chat.Name.ToLower().Contains(search.ToLower().Trim()));
+        }
+
+        if (numberOfChats is not null)
+        {
+            chatsInfo = chatsInfo.Take((int)numberOfChats);
+        }
+
+        await SendChatsInfo(connectionId, chatsInfo.Select(chat => chat.ToDTO()));
+    }
+    private async Task SendChatsInfoToAuthenticatedUser(string connectionId, string userName, IEnumerable<Chat> chats, int? numberOfChats, string? search)
+    {
+        await SendOwnChatsInfo(connectionId, chats.Where(chat => chat.Author.Equals(userName)).Select(chat => chat.ToDTO()));
+
+        IEnumerable<Chat> chatsInfo = new List<Chat>(chats.Where(chat => chat.Author.Equals(userName) == false));
+
+        if (string.IsNullOrWhiteSpace(search) == false)
+        {
+            chatsInfo = chatsInfo.Where(chat => chat.Name.ToLower().Contains(search.ToLower().Trim()));
+        }
+
+        if (numberOfChats is not null)
+        {
+            chatsInfo = chatsInfo.Take((int)numberOfChats);
+        }
+
+        await SendOthersChatsInfo(connectionId, chatsInfo.Select(chat => chat.ToDTO()));
+    }
+
+    private async Task SendChatsInfo(string connectionId, IEnumerable<ChatDTO> chatsInfo)
+    {
+        await _hubContext.Clients.Client(connectionId).SendAsync(ChatHub.ReceiveChatsInfoMethod, chatsInfo);
+    }
+    private async Task SendOwnChatsInfo(string connectionId, IEnumerable<ChatDTO> chatsInfo)
+    {
+        await _hubContext.Clients.Client(connectionId).SendAsync(ChatHub.ReceiveOwnChatsInfoMethod, chatsInfo);
+    }
+    private async Task SendOthersChatsInfo(string connectionId, IEnumerable<ChatDTO> chatsInfo)
+    {
+        await _hubContext.Clients.Client(connectionId).SendAsync(ChatHub.ReceiveOthersChatsInfoMethod, chatsInfo);
     }
 }

@@ -25,6 +25,11 @@ public partial class ChatHub : Hub
     {
         _state.AddConnectionSettings(Context.ConnectionId);
 
+        if (Context.User?.Identity?.Name is not null)
+        {
+            _state.GetConnectionSettings(Context.ConnectionId).UserName = Context.User.Identity.Name;
+        }
+
         await base.OnConnectedAsync();
     }
     public override async Task OnDisconnectedAsync(Exception? exception)
