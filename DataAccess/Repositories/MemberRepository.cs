@@ -1,4 +1,4 @@
-﻿using System.Linq.Expressions;
+﻿		using System.Linq.Expressions;
 
 namespace DataAccess.Repositories;
 
@@ -28,8 +28,16 @@ public class MemberRepository : Repository<Member>, IMemberRepository
 
         return member;
     }
+    public async Task<IEnumerable<Member>> GetChatMembers(Guid chatId)
+    {
+		return await _context.Members
+			.Where(m => m.Chat.ChatId.Equals(chatId))
+            .Include(m => m.Chat)
+            .OrderBy(m => m.Nickname)
+            .ToListAsync();
+    }
 
-	public override async Task<IEnumerable<Member>> GetAllByExpression(Expression<Func<Member, bool>> predicate)
+    public override async Task<IEnumerable<Member>> GetAllByExpression(Expression<Func<Member, bool>> predicate)
 	{
         return await _context.Members
 			.Where(predicate)

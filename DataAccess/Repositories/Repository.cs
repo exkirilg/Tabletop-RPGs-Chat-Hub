@@ -23,7 +23,7 @@ public abstract class Repository<T> : IRepository<T> where T : class, IComparabl
 
         if (entity is null)
         {
-            throw new Exception($"There is no {nameof(T)} with id: {id}");
+            throw new Exception($"There is no {typeof(T).Name} with id: {id}");
         }
 
         return entity;

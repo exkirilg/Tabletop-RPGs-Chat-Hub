@@ -16,7 +16,7 @@ namespace DataAccess.Migrations.ChatHub
                     ChatId = table.Column<Guid>(type: "uuid", nullable: false),
                     Name = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
                     Author = table.Column<string>(type: "text", nullable: false),
-                    Description = table.Column<string>(type: "character varying(150)", maxLength: 250, nullable: true)
+                    Description = table.Column<string>(type: "character varying(250)", maxLength: 250, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -29,7 +29,8 @@ namespace DataAccess.Migrations.ChatHub
                 {
                     MemberId = table.Column<Guid>(type: "uuid", nullable: false),
                     ChatId = table.Column<Guid>(type: "uuid", nullable: false),
-                    Name = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false)
+                    Username = table.Column<string>(type: "text", nullable: false),
+                    Nickname = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
                 {

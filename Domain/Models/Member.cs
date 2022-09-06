@@ -6,46 +6,39 @@ namespace Domain.Models;
 [Index(nameof(MemberId), IsUnique = true)]
 public class Member : IComparable<Member>
 {
-    public const int NameMinLength = 5;
-    public const int NameMaxLength = 100;
-
-    private string _name;
-
     [Key]
     public Guid MemberId { get; init; } = Guid.NewGuid();
 
     [Required]
     public Chat Chat { get; init; }
 
-    [Required(AllowEmptyStrings = false)]
-    [MinLength(NameMinLength)]
-    [MaxLength(NameMaxLength)]
-    public string Name
-    {
-        get => _name;
-        set
-        {
-            if (string.IsNullOrWhiteSpace(value)) throw new ArgumentNullException(nameof(value));
+    [Required(AllowEmptyStrings = true)]
+    public string Username { get; set; }
 
-            _name = value.Trim();
-        }
-    }
+    [Required(AllowEmptyStrings = false)]
+    public string Nickname { get; set; }
 
     private Member()
     {
     }
-    public Member(Chat chat, string name)
+    public Member(Chat chat, string username, string nickname)
     {
         ArgumentNullException.ThrowIfNull(chat, nameof(chat));
 
         Chat = chat;
-        Name = name;
+        Username = username;
+        Nickname = nickname;
+    }
+
+    public MemberDTO ToDTO()
+    {
+        return new MemberDTO(MemberId, Chat.ChatId, Username, Nickname);
     }
 
     public int CompareTo(Member? other)
     {
         if (other is null) return 1;
 
-        return Name.CompareTo(other.Name);
+        return Nickname.CompareTo(other.Nickname);
     }
 }
