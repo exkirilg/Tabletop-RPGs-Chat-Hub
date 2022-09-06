@@ -37,7 +37,7 @@ public class ChatsController : ControllerBase
     }
 
     /// <summary>
-    /// Returns list of own chats
+    /// Returns list of owned chats
     /// </summary>
     /// <returns></returns>
     /// <response code="200"></response>
@@ -63,6 +63,27 @@ public class ChatsController : ControllerBase
         [FromQuery] int numberOfChats = defNumberOfChats, [FromQuery] string? search = null)
     {
         return Ok((await _services.GetChatsByOtherAuthorsAsync(User.Identity!.Name!, numberOfChats, search)).Select(chat => chat.ToDTO()));
+    }
+
+    /// <summary>
+    /// Return chat information
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns></returns>
+    /// <response code="200"></response>
+    /// <response code="400">If chat with specified id doesn't exist</response>
+    [HttpGet("{id}")]
+    public async Task<IActionResult> GetChat(Guid id)
+    {
+        try
+        {
+            return Ok((await _services.GetChatAsync(id)).ToDTO());
+        }
+        catch
+        {
+            ModelState.AddModelError("Id", "Chat with specified id doesn't exist");
+            return ValidationProblem();
+        }
     }
 
     /// <summary>

@@ -54,6 +54,11 @@ public class ChatServices : IChatServices
         return await _unitOfWork.ChatRepository.GetSpecificNumberOfChatsByOtherAuthorsAsync(author, numberOfChats);
     }
 
+    public async Task<Chat> GetChatAsync(Guid id)
+    {
+        return await _unitOfWork.ChatRepository.GetByIdAsync(id);
+    }
+
     public async Task<Chat> CreateNewChatAsync(string name, string author, string description)
     {
         if (await _unitOfWork.ChatRepository.ChatExistsAsync(name))
