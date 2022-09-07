@@ -63,7 +63,7 @@ public class MembersController : ControllerBase
     /// <returns></returns>
     /// <response code="200"></response>
     /// <response code="400">In case of validation error</response>
-    [HttpPost("leave-{memberId}")]
+    [HttpPost("leave/{memberId}")]
     public async Task<IActionResult> LeaveChat(Guid memberId)
     {
         try
