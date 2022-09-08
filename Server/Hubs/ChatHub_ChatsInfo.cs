@@ -15,7 +15,7 @@ public partial class ChatHub
     {
         var settings = _state.GetConnectionSettings(Context.ConnectionId);
         settings.NumberOfChats = numberOfChats;
-        settings.ChatsSearch = search;
+        settings.ChatSearch = search;
 
         await SendChatsInfo(Context.ConnectionId, numberOfChats, search);
     }
@@ -31,7 +31,7 @@ public partial class ChatHub
     {
         var settings = _state.GetConnectionSettings(Context.ConnectionId);
         settings.NumberOfChats = numberOfChats;
-        settings.ChatsSearch = search;
+        settings.ChatSearch = search;
 
         await SendOthersChatsInfo(Context.ConnectionId, Context.User!.Identity!.Name!, numberOfChats, search);
     }

@@ -34,11 +34,11 @@ public class ChatHubBroadcast
 
             if (connectionSettings.UserName is null)
             {
-                await SendChatsInfoToUnauthenticatedUser(connectionId, e.Chats, connectionSettings.NumberOfChats, connectionSettings.ChatsSearch);
+                await SendChatsInfoToUnauthenticatedUser(connectionId, e.Chats, connectionSettings.NumberOfChats, connectionSettings.ChatSearch);
             }
             else
             {
-                await SendChatsInfoToAuthenticatedUser(connectionId, connectionSettings.UserName, e.Chats, connectionSettings.NumberOfChats, connectionSettings.ChatsSearch);
+                await SendChatsInfoToAuthenticatedUser(connectionId, connectionSettings.UserName, e.Chats, connectionSettings.NumberOfChats, connectionSettings.ChatSearch);
             }
         }
     }
