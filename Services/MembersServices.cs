@@ -1,5 +1,6 @@
 ﻿using Domain.DataAccessInterfaces;
 using Domain.Models;
+using Services.CustomEventsArguments;
 using Services.Interfaces;
 
 namespace Services;
@@ -34,12 +35,18 @@ public class MembersServices : IMembersServices
         await _unitOfWork.MemberRepository.AddAsync(member);
         await _unitOfWork.CompleteAsync();
 
+        _notificationsServices.InvokeMemberCreated(this, new MemberCreatedEventArgs(member));
+
         return member;
     }
 
     public async Task RemoveMemberAsync(Guid id)
     {
+        var member = await _unitOfWork.MemberRepository.GetByIdAsync(id);
+
         await _unitOfWork.MemberRepository.RemoveByIdAsync(id);
         await _unitOfWork.CompleteAsync();
+
+        _notificationsServices.InvokeMemberRemoved(this, new MemberRemovedEventArgs(member));
     }
 }

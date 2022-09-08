@@ -20,6 +20,8 @@ public class ChatHubBroadcast
 
         _notificationsServices.StatisticsChanged += OnStatisticsChanged;
         _notificationsServices.ChatsChanged += OnChatsChanged;
+        _notificationsServices.MemberCreated += OnMemberCreated;
+        _notificationsServices.MemberRemoved += OnMemberRemoved;
     }
 
     private async void OnStatisticsChanged(object? sender, StatisticsChangedEventArgs e)
@@ -41,6 +43,14 @@ public class ChatHubBroadcast
                 await SendChatsInfoToAuthenticatedUser(connectionId, connectionSettings.UserName, e.Chats, connectionSettings.NumberOfChats, connectionSettings.ChatSearch);
             }
         }
+    }
+    private async void OnMemberCreated(object? sender, MemberCreatedEventArgs e)
+    {
+        // TODO:
+    }
+    private async void OnMemberRemoved(object? sender, MemberRemovedEventArgs e)
+    {
+        // TODO:
     }
 
     private async Task SendChatsInfoToUnauthenticatedUser(string connectionId, IEnumerable<Chat> chats, int? numberOfChats, string? search)
