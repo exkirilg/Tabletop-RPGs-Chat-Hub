@@ -6,11 +6,13 @@ public interface INotificationsServices
 {
     event EventHandler<StatisticsChangedEventArgs> StatisticsChanged;
     event EventHandler<ChatsChangedEventArgs> ChatsChanged;
-    event EventHandler<MemberCreatedEventArgs> MemberCreated;
-    event EventHandler<MemberRemovedEventArgs> MemberRemoved;
+    event EventHandler<MemberChangedEventArgs> MemberCreated;
+    event EventHandler<MemberChangedEventArgs> MemberUpdated;
+    event EventHandler<MemberChangedEventArgs> MemberRemoved;
 
     void InvokeStatisticsChanged(object sender, StatisticsChangedEventArgs e);
     void InvokeChatsChanged(object sender, ChatsChangedEventArgs e);
-    void InvokeMemberCreated(object sender, MemberCreatedEventArgs e);
-    void InvokeMemberRemoved(object sender, MemberRemovedEventArgs e);
+    void InvokeMemberCreated(object sender, MemberChangedEventArgs e);
+    void InvokeMemberUpdated(object sender, MemberChangedEventArgs e);
+    void InvokeMemberRemoved(object sender, MemberChangedEventArgs e);
 }

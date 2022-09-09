@@ -1,4 +1,4 @@
-﻿		using System.Linq.Expressions;
+﻿using System.Linq.Expressions;
 
 namespace DataAccess.Repositories;
 
@@ -36,6 +36,14 @@ public class MemberRepository : Repository<Member>, IMemberRepository
             .OrderBy(m => m.Nickname)
             .ToListAsync();
     }
+	public async Task<IEnumerable<Member>> GetUserMembers(string username)
+	{
+        return await _context.Members
+            .Where(m => m.Username.Equals(username))
+            .Include(m => m.Chat)
+            .OrderBy(m => m.Nickname)
+            .ToListAsync();
+    }
 
     public override async Task<IEnumerable<Member>> GetAllByExpression(Expression<Func<Member, bool>> predicate)
 	{
@@ -51,5 +59,18 @@ public class MemberRepository : Repository<Member>, IMemberRepository
 			.Where(predicate)
 			.Include(m => m.Chat)
 			.FirstOrDefaultAsync();
+    }
+
+	public async Task UpdateMembersUserAsync(Guid id, string username)
+	{
+		var member = await _context.Members.FindAsync(id);
+
+        if (member is null)
+        {
+            throw new Exception($"There is no {nameof(member)} with id: {id}");
+        }
+
+        member.Username = username;
+        _context.Members.Update(member);
     }
 }

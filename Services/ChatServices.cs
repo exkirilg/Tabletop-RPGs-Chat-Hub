@@ -29,29 +29,29 @@ public class ChatServices : IChatServices
         return await _unitOfWork.ChatRepository.GetAllAsync();
     }
 
-    public async Task<IEnumerable<Chat>> GetChatsAsync(int numberOfChats, string? search)
+    public async Task<IEnumerable<Chat>> GetChatsAsync(string? search)
 	{
         if (search is not null)
         {
-            return await _unitOfWork.ChatRepository.GetSpecificNumberOfChatsWithNameSearchAsync(numberOfChats, search);
+            return await _unitOfWork.ChatRepository.GetChatsWithNameSearchAsync(search);
         }
         
-        return await _unitOfWork.ChatRepository.GetSpecificNumberOfChatsAsync(numberOfChats);
+        return await _unitOfWork.ChatRepository.GetAllAsync();
     }
 
     public async Task<IEnumerable<Chat>> GetChatsByAuthorAsync(string author)
     {
-        return await _unitOfWork.ChatRepository.GetSpecificNumberOfChatsByAuthorAsync(author);
+        return await _unitOfWork.ChatRepository.GetChatsByAuthorAsync(author);
     }
 
-    public async Task<IEnumerable<Chat>> GetChatsByOtherAuthorsAsync(string author, int numberOfChats, string? search)
+    public async Task<IEnumerable<Chat>> GetChatsByOtherAuthorsAsync(string author, string? search)
     {
         if (search is not null)
         {
-            return await _unitOfWork.ChatRepository.GetSpecificNumberOfChatsByOtherAuthorsWithNameSearchAsync(author, numberOfChats, search);
+            return await _unitOfWork.ChatRepository.GetChatsByOtherAuthorsWithNameSearchAsync(author, search);
         }
 
-        return await _unitOfWork.ChatRepository.GetSpecificNumberOfChatsByOtherAuthorsAsync(author, numberOfChats);
+        return await _unitOfWork.ChatRepository.GetChatsByOtherAuthorsAsync(author);
     }
 
     public async Task<Chat> GetChatAsync(Guid id)

@@ -29,4 +29,12 @@ public class State
     {
         _connectionsSettings.Remove(connectionId);
     }
+    
+    public void RemoveMember(Guid memberId)
+    {
+        foreach (var settings in _connectionsSettings.Values)
+        {
+            settings.RemoveMember(memberId);
+        }
+    }
 }

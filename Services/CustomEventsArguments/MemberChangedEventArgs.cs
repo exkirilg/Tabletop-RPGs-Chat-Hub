@@ -2,11 +2,11 @@
 
 namespace Services.CustomEventsArguments;
 
-public class MemberCreatedEventArgs : EventArgs
+public class MemberChangedEventArgs : EventArgs
 {
 	public Member Member { get; init; }
 
-	public MemberCreatedEventArgs(Member member)
+	public MemberChangedEventArgs(Member member)
 	{
 		Member = member;
 	}

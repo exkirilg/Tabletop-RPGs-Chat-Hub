@@ -33,44 +33,33 @@ public class ChatRepository : Repository<Chat>, IChatRepository
             .ToListAsync();
     }
 
-    public async Task<IEnumerable<Chat>> GetSpecificNumberOfChatsAsync(int numberOfChats)
-    {
-        return await _context.Chats
-            .OrderBy(chat => chat.Name)
-            .Take(numberOfChats)
-            .ToListAsync();
-    }
-    public async Task<IEnumerable<Chat>> GetSpecificNumberOfChatsWithNameSearchAsync(int numberOfChats, string search)
+    public async Task<IEnumerable<Chat>> GetChatsWithNameSearchAsync(string search)
     {
         return await _context.Chats
             .Where(c => c.Name.ToLower().Contains(search.ToLower().Trim()))
             .OrderBy(chat => chat.Name)
-            .Take(numberOfChats)
             .ToListAsync();
     }
-
-    public async Task<IEnumerable<Chat>> GetSpecificNumberOfChatsByAuthorAsync(string author)
+    public async Task<IEnumerable<Chat>> GetChatsByAuthorAsync(string author)
     {
         return await _context.Chats
             .Where(chat => chat.Author.Equals(author))
             .OrderBy(chat => chat.Name)
             .ToListAsync();
     }
-    public async Task<IEnumerable<Chat>> GetSpecificNumberOfChatsByOtherAuthorsAsync(string author, int numberOfChats)
+    public async Task<IEnumerable<Chat>> GetChatsByOtherAuthorsAsync(string author)
     {
         return await _context.Chats
             .Where(chat => chat.Author.Equals(author) == false)
             .OrderBy(chat => chat.Name)
-            .Take(numberOfChats)
             .ToListAsync();
     }
-    public async Task<IEnumerable<Chat>> GetSpecificNumberOfChatsByOtherAuthorsWithNameSearchAsync(string author, int numberOfChats, string search)
+    public async Task<IEnumerable<Chat>> GetChatsByOtherAuthorsWithNameSearchAsync(string author, string search)
     {
         return await _context.Chats
             .Where(chat => chat.Author.Equals(author) == false)
             .Where(c => c.Name.ToLower().Contains(search.ToLower().Trim()))
             .OrderBy(chat => chat.Name)
-            .Take(numberOfChats)
             .ToListAsync();
     }
 

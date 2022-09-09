@@ -13,8 +13,6 @@ namespace Server.Controllers;
 [ApiController]
 public class ChatsController : ControllerBase
 {
-    private const int defNumberOfChats = 12;
-
     private readonly IChatServices _services;
 
     public ChatsController(IChatServices services)
@@ -25,15 +23,13 @@ public class ChatsController : ControllerBase
     /// <summary>
     /// Returns list of chats
     /// </summary>
-    /// <param name="numberOfChats"></param>
     /// <param name="search"></param>
     /// <returns></returns>
     /// <response code="200"></response>
     [HttpGet()]
-    public async Task<IActionResult> GetChats(
-        [FromQuery] int numberOfChats = defNumberOfChats, [FromQuery] string? search = null)
+    public async Task<IActionResult> GetChats([FromQuery] string? search = null)
     {
-        return Ok((await _services.GetChatsAsync(numberOfChats, search)).Select(chat => chat.ToDTO()));
+        return Ok((await _services.GetChatsAsync(search)).Select(chat => chat.ToDTO()));
     }
 
     /// <summary>
@@ -52,17 +48,15 @@ public class ChatsController : ControllerBase
     /// <summary>
     /// Returns list of others chats
     /// </summary>
-    /// <param name="numberOfChats"></param>
     /// <param name="search"></param>
     /// <returns></returns>
     /// <response code="200"></response>
     /// <response code="401"></response>
     [HttpGet("others")]
     [Authorize]
-    public async Task<IActionResult> GetOthersChats(
-        [FromQuery] int numberOfChats = defNumberOfChats, [FromQuery] string? search = null)
+    public async Task<IActionResult> GetOthersChats([FromQuery] string? search = null)
     {
-        return Ok((await _services.GetChatsByOtherAuthorsAsync(User.Identity!.Name!, numberOfChats, search)).Select(chat => chat.ToDTO()));
+        return Ok((await _services.GetChatsByOtherAuthorsAsync(User.Identity!.Name!, search)).Select(chat => chat.ToDTO()));
     }
 
     /// <summary>

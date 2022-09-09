@@ -9,14 +9,18 @@ public partial class ChatHub : Hub
 
     private readonly IStatisticsServices _statisticsServices;
     private readonly IChatServices _chatServices;
+    private readonly IMembersServices _membersServices;
 
     private readonly ChatHubBroadcast _broadcast;
     private readonly State _state;
 
-    public ChatHub(IStatisticsServices statisticsServices, IChatServices chatServices, ChatHubBroadcast broadcast, State state)
+    public ChatHub(
+        IStatisticsServices statisticsServices, IChatServices chatServices, IMembersServices membersServices,
+        ChatHubBroadcast broadcast, State state)
     {
         _statisticsServices = statisticsServices;
         _chatServices = chatServices;
+        _membersServices = membersServices;
         _broadcast = broadcast;
         _state = state;
     }
@@ -34,6 +38,17 @@ public partial class ChatHub : Hub
     }
     public override async Task OnDisconnectedAsync(Exception? exception)
     {
+        var settings = _state.GetConnectionSettings(Context.ConnectionId);
+
+        if (settings.UserName is null)
+        {
+            foreach (var member in settings.GetMembers())
+            {
+                await _membersServices.RemoveMemberAsync(member.MemberId);
+                await Groups.RemoveFromGroupAsync(Context.ConnectionId, member.Chat.Name);
+            }
+        }
+
         _state.RemoveConnectionSettings(Context.ConnectionId);
 
         await base.OnDisconnectedAsync(exception);

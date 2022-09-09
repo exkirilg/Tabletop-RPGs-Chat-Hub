@@ -21,6 +21,16 @@ public class MembersServices : IMembersServices
         return await _unitOfWork.MemberRepository.GetChatMembers(chatId);
     }
 
+    public async Task<Member> GetMemberAsync(Guid id)
+    {
+        return await _unitOfWork.MemberRepository.GetByIdAsync(id);
+    }
+
+    public async Task<IEnumerable<Member>> GetUserMembers(string username)
+    {
+        return await _unitOfWork.MemberRepository.GetUserMembers(username);
+    }
+
     public async Task<Member> CreateNewChatMemberAsync(Guid chatId, string username, string nickname)
     {
         var chat = await _unitOfWork.ChatRepository.GetByIdAsync(chatId);
@@ -35,9 +45,18 @@ public class MembersServices : IMembersServices
         await _unitOfWork.MemberRepository.AddAsync(member);
         await _unitOfWork.CompleteAsync();
 
-        _notificationsServices.InvokeMemberCreated(this, new MemberCreatedEventArgs(member));
+        _notificationsServices.InvokeMemberCreated(this, new MemberChangedEventArgs(member));
 
         return member;
+    }
+
+    public async Task UpdateMembersUserAsync(Guid id, string username)
+    {
+        await _unitOfWork.MemberRepository.UpdateMembersUserAsync(id, username);
+        await _unitOfWork.CompleteAsync();
+
+        var member = await _unitOfWork.MemberRepository.GetByIdAsync(id);
+        _notificationsServices.InvokeMemberUpdated(this, new MemberChangedEventArgs(member));
     }
 
     public async Task RemoveMemberAsync(Guid id)
@@ -47,6 +66,6 @@ public class MembersServices : IMembersServices
         await _unitOfWork.MemberRepository.RemoveByIdAsync(id);
         await _unitOfWork.CompleteAsync();
 
-        _notificationsServices.InvokeMemberRemoved(this, new MemberRemovedEventArgs(member));
+        _notificationsServices.InvokeMemberRemoved(this, new MemberChangedEventArgs(member));
     }
 }

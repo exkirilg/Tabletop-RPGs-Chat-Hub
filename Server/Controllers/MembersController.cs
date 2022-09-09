@@ -1,5 +1,6 @@
 ﻿using Domain.DTO;
 using Domain.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Services.Interfaces;
@@ -23,10 +24,42 @@ public class MembersController : ControllerBase
     /// <param name="chatId"></param>
     /// <returns></returns>
     /// <response code="200"></response>
-    [HttpGet("{chatId}")]
+    [HttpGet("chat/{chatId}")]
     public async Task<IActionResult> GetMembers(Guid chatId)
     {
         return Ok((await _services.GetChatMembersAsync(chatId)).Select(m => m.ToDTO()));
+    }
+
+    /// <summary>
+    /// Returns members of user
+    /// </summary>
+    /// <returns></returns>
+    /// <response code="200"></response>
+    /// <response code="401">If unauthorized</response>
+    [HttpGet("{username}")]
+    public async Task<IActionResult> GetUserMembers()
+    {
+        return Ok((await _services.GetUserMembers(User.Identity!.Name!)).Select(m => m.ToDTO()));
+    }
+
+    /// <summary>
+    /// Returns member info
+    /// </summary>
+    /// <param name="memberId"></param>
+    /// <returns></returns>
+    /// <response code="200"></response>
+    [HttpGet("{memberId}")]
+    public async Task<IActionResult> GetMemberInfo(Guid memberId)
+    {
+        try
+        {
+            return Ok((await _services.GetMemberAsync(memberId)).ToDTO());
+        }
+        catch
+        {
+            ModelState.AddModelError("Id", "Member with specified id doesn't exist");
+            return ValidationProblem();
+        }        
     }
 
     /// <summary>
@@ -37,7 +70,7 @@ public class MembersController : ControllerBase
     /// <response code="200"></response>
     /// <response code="400">In case of validation error</response>
     [HttpPost("new")]
-    public async Task<IActionResult> EnterChat([FromBody(EmptyBodyBehavior = EmptyBodyBehavior.Disallow)] NewMemberRequestDTO request)
+    public async Task<IActionResult> JoinChat([FromBody(EmptyBodyBehavior = EmptyBodyBehavior.Disallow)] NewMemberRequestDTO request)
     {
         Member member;
 
@@ -63,7 +96,7 @@ public class MembersController : ControllerBase
     /// <returns></returns>
     /// <response code="200"></response>
     /// <response code="400">In case of validation error</response>
-    [HttpPost("leave/{memberId}")]
+    [HttpPost("remove/{memberId}")]
     public async Task<IActionResult> LeaveChat(Guid memberId)
     {
         try
@@ -79,4 +112,28 @@ public class MembersController : ControllerBase
         return Ok();
     }
 
+    /// <summary>
+    /// Updates specified member with User data
+    /// </summary>
+    /// <param name="memberId"></param>
+    /// <returns></returns>
+    /// <response code="200"></response>
+    /// <response code="400">In case of validation error</response>
+    /// <response code="401">If unauthorized</response>
+    [HttpPost("update/{memberId}")]
+    [Authorize]
+    public async Task<IActionResult> UpdateMember(Guid memberId)
+    {
+        try
+        {
+            await _services.UpdateMembersUserAsync(memberId, User.Identity!.Name!);
+        }
+        catch
+        {
+            ModelState.AddModelError("Id", "Member with specified id doesn't exist");
+            return ValidationProblem();
+        }
+
+        return Ok();
+    }
 }

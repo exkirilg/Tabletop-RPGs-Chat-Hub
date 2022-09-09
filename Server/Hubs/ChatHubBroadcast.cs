@@ -21,6 +21,7 @@ public class ChatHubBroadcast
         _notificationsServices.StatisticsChanged += OnStatisticsChanged;
         _notificationsServices.ChatsChanged += OnChatsChanged;
         _notificationsServices.MemberCreated += OnMemberCreated;
+        _notificationsServices.MemberUpdated += OnMemberUpdated;
         _notificationsServices.MemberRemoved += OnMemberRemoved;
     }
 
@@ -36,24 +37,28 @@ public class ChatHubBroadcast
 
             if (connectionSettings.UserName is null)
             {
-                await SendChatsInfoToUnauthenticatedUser(connectionId, e.Chats, connectionSettings.NumberOfChats, connectionSettings.ChatSearch);
+                await SendChatsInfoToUnauthenticatedUser(connectionId, e.Chats, connectionSettings.ChatSearch);
             }
             else
             {
-                await SendChatsInfoToAuthenticatedUser(connectionId, connectionSettings.UserName, e.Chats, connectionSettings.NumberOfChats, connectionSettings.ChatSearch);
+                await SendChatsInfoToAuthenticatedUser(connectionId, connectionSettings.UserName, e.Chats, connectionSettings.ChatSearch);
             }
         }
     }
-    private async void OnMemberCreated(object? sender, MemberCreatedEventArgs e)
+    private async void OnMemberCreated(object? sender, MemberChangedEventArgs e)
     {
         // TODO:
     }
-    private async void OnMemberRemoved(object? sender, MemberRemovedEventArgs e)
+    private void OnMemberUpdated(object? sender, MemberChangedEventArgs e)
+    {
+        _state.RemoveMember(e.Member.MemberId);
+    }
+    private async void OnMemberRemoved(object? sender, MemberChangedEventArgs e)
     {
         // TODO:
     }
 
-    private async Task SendChatsInfoToUnauthenticatedUser(string connectionId, IEnumerable<Chat> chats, int? numberOfChats, string? search)
+    private async Task SendChatsInfoToUnauthenticatedUser(string connectionId, IEnumerable<Chat> chats, string? search)
     {
         IEnumerable<Chat> chatsInfo = new List<Chat>(chats);
 
@@ -62,14 +67,9 @@ public class ChatHubBroadcast
             chatsInfo = chatsInfo.Where(chat => chat.Name.ToLower().Contains(search.ToLower().Trim()));
         }
 
-        if (numberOfChats is not null)
-        {
-            chatsInfo = chatsInfo.Take((int)numberOfChats);
-        }
-
         await SendChatsInfo(connectionId, chatsInfo.Select(chat => chat.ToDTO()));
     }
-    private async Task SendChatsInfoToAuthenticatedUser(string connectionId, string userName, IEnumerable<Chat> chats, int? numberOfChats, string? search)
+    private async Task SendChatsInfoToAuthenticatedUser(string connectionId, string userName, IEnumerable<Chat> chats, string? search)
     {
         await SendOwnChatsInfo(connectionId, chats.Where(chat => chat.Author.Equals(userName)).Select(chat => chat.ToDTO()));
 
@@ -78,11 +78,6 @@ public class ChatHubBroadcast
         if (string.IsNullOrWhiteSpace(search) == false)
         {
             chatsInfo = chatsInfo.Where(chat => chat.Name.ToLower().Contains(search.ToLower().Trim()));
-        }
-
-        if (numberOfChats is not null)
-        {
-            chatsInfo = chatsInfo.Take((int)numberOfChats);
         }
 
         await SendOthersChatsInfo(connectionId, chatsInfo.Select(chat => chat.ToDTO()));

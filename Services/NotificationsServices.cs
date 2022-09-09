@@ -7,8 +7,9 @@ public class NotificationsServices : INotificationsServices
 {
     public event EventHandler<StatisticsChangedEventArgs>? StatisticsChanged;
     public event EventHandler<ChatsChangedEventArgs>? ChatsChanged;
-    public event EventHandler<MemberCreatedEventArgs>? MemberCreated;
-    public event EventHandler<MemberRemovedEventArgs>? MemberRemoved;
+    public event EventHandler<MemberChangedEventArgs>? MemberCreated;
+    public event EventHandler<MemberChangedEventArgs>? MemberUpdated;
+    public event EventHandler<MemberChangedEventArgs>? MemberRemoved;
 
     public void InvokeStatisticsChanged(object sender, StatisticsChangedEventArgs e)
     {
@@ -18,11 +19,15 @@ public class NotificationsServices : INotificationsServices
     {
         ChatsChanged?.Invoke(sender, e);
     }
-    public void InvokeMemberCreated(object sender, MemberCreatedEventArgs e)
+    public void InvokeMemberCreated(object sender, MemberChangedEventArgs e)
     {
         MemberCreated?.Invoke(sender, e);
     }
-    public void InvokeMemberRemoved(object sender, MemberRemovedEventArgs e)
+    public void InvokeMemberUpdated(object sender, MemberChangedEventArgs e)
+    {
+        MemberUpdated?.Invoke(sender, e);
+    }
+    public void InvokeMemberRemoved(object sender, MemberChangedEventArgs e)
     {
         MemberRemoved?.Invoke(sender, e);
     }

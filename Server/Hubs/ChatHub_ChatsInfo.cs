@@ -11,13 +11,12 @@ public partial class ChatHub
 
     #region Requests
 
-    public async Task ChatsInfoRequest(int numberOfChats, string? search = default)
+    public async Task ChatsInfoRequest(string? search = default)
     {
         var settings = _state.GetConnectionSettings(Context.ConnectionId);
-        settings.NumberOfChats = numberOfChats;
         settings.ChatSearch = search;
 
-        await SendChatsInfo(Context.ConnectionId, numberOfChats, search);
+        await SendChatsInfo(Context.ConnectionId, search);
     }
 
     [Authorize]
@@ -27,24 +26,23 @@ public partial class ChatHub
     }
 
     [Authorize]
-    public async Task OthersChatsInfoRequest(int numberOfChats, string? search = default)
+    public async Task OthersChatsInfoRequest(string? search = default)
     {
         var settings = _state.GetConnectionSettings(Context.ConnectionId);
-        settings.NumberOfChats = numberOfChats;
         settings.ChatSearch = search;
 
-        await SendOthersChatsInfo(Context.ConnectionId, Context.User!.Identity!.Name!, numberOfChats, search);
+        await SendOthersChatsInfo(Context.ConnectionId, Context.User!.Identity!.Name!, search);
     }
 
     #endregion
 
-    private async Task SendChatsInfo(string connectionId, int numberOfChats, string? search)
+    private async Task SendChatsInfo(string connectionId, string? search)
     {
         await Clients
             .Client(connectionId)
             .SendAsync(
                 ReceiveChatsInfoMethod,
-                (await _chatServices.GetChatsAsync(numberOfChats, search)).Select(chat => chat.ToDTO())
+                (await _chatServices.GetChatsAsync(search)).Select(chat => chat.ToDTO())
             );
     }
     private async Task SendOwnChatsInfo(string connectionId, string UserName)
@@ -56,13 +54,13 @@ public partial class ChatHub
                 (await _chatServices.GetChatsByAuthorAsync(UserName)).Select(chat => chat.ToDTO())
             );
     }
-    private async Task SendOthersChatsInfo(string connectionId, string UserName, int numberOfChats, string? search)
+    private async Task SendOthersChatsInfo(string connectionId, string UserName, string? search)
     {
         await Clients
             .Client(connectionId)
             .SendAsync(
                 ReceiveOthersChatsInfoMethod,
-                (await _chatServices.GetChatsByOtherAuthorsAsync(UserName, numberOfChats, search)).Select(chat => chat.ToDTO())
+                (await _chatServices.GetChatsByOtherAuthorsAsync(UserName, search)).Select(chat => chat.ToDTO())
             );
     }
 }
