@@ -36,7 +36,7 @@ public class MembersController : ControllerBase
     /// <returns></returns>
     /// <response code="200"></response>
     /// <response code="401">If unauthorized</response>
-    [HttpGet("{username}")]
+    [HttpGet()]
     public async Task<IActionResult> GetUserMembers()
     {
         return Ok((await _services.GetUserMembers(User.Identity!.Name!)).Select(m => m.ToDTO()));
