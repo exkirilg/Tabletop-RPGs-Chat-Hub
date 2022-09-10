@@ -118,4 +118,29 @@ public class ChatsController : ControllerBase
 
         return Ok(chat.ToDTO());
     }
+
+    /// <summary>
+    /// Removes specified chat
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns></returns>
+    /// <response code="200"></response>
+    /// <response code="400">In case of validation error or if chat with specified name already exists</response>
+    /// <response code="401">If unauthorized</response>
+    [HttpPost("remove/{id}")]
+    [Authorize]
+    public async Task<IActionResult> RemoveChat(Guid id)
+    {
+        try
+        {
+            await _services.RemoveChatAsync(id, User.Identity!.Name!);
+        }
+        catch (Exception ex)
+        {
+            ModelState.AddModelError("Chat", ex.Message);
+            return ValidationProblem();
+        }
+
+        return Ok();
+    }
 }

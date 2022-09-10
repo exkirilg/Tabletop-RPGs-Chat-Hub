@@ -80,9 +80,16 @@ public class ChatServices : IChatServices
         return chat;
     }
 
-    public async Task RemoveChatAsync(Guid chatId)
+    public async Task RemoveChatAsync(Guid chatId, string username)
     {
+        var chat = await _unitOfWork.ChatRepository.GetByIdAsync(chatId);
+        if (chat.Author.Equals(username) == false)
+        {
+            throw new Exception("Unauthorized");
+        }
+
         await _unitOfWork.ChatRepository.RemoveByIdAsync(chatId);
+        await _unitOfWork.CompleteAsync();
 
         await OnChatsChanged();
     }

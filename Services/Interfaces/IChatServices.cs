@@ -11,5 +11,5 @@ public interface IChatServices
     Task<IEnumerable<Chat>> GetChatsByOtherAuthorsAsync(string author, string? search);
     Task<Chat> GetChatAsync(Guid id);
     Task<Chat> CreateNewChatAsync(string name, string author, string description);
-    Task RemoveChatAsync(Guid chatId);
+    Task RemoveChatAsync(Guid chatId, string username);
 }
