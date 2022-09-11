@@ -16,9 +16,9 @@ public class MessagesServices : IMessagesServices
         _notificationsServices = notificationsServices;
     }
 
-    public async Task<IEnumerable<Message>> GetMessagesOnDateAsync(DateOnly date)
+    public async Task<IEnumerable<Message>> GetLastMessagesUpToDateAsync(Guid ChatId, DateTime date)
     {
-        return await _unitOfWork.MessageRepository.GetMessagesOnDate(date);
+        return await _unitOfWork.MessageRepository.GetLastMessagesUpToDateAsync(ChatId, date);
     }
 
     public async Task<Message> CreateNewSystemMessageAsync(Guid chatId, string text)

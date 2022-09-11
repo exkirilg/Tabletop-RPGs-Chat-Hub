@@ -2,6 +2,7 @@
 
 public partial class ChatHub
 {
+    public const string ReceiveMessagesMethod = "ReceiveMessages";
     public const string ReceiveSystemMessageMethod = "ReceiveSystemMessage";
     public const string ReceiveUserMessageMethod = "ReceiveUserMessage";
 

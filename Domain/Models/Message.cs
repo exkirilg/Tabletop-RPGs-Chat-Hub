@@ -38,6 +38,7 @@ public class Message : IComparable<Message>
         return new MessageDTO(
             MessageId,
             Chat.ChatId,
+            Author?.MemberId,
             Author?.Nickname,
             Author is null,
             DateTimeCreated,

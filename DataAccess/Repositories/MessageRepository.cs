@@ -8,13 +8,21 @@ public class MessageRepository : Repository<Message>, IMessageRepository
 	{
 	}
 
-    public async Task<IEnumerable<Message>> GetMessagesOnDate(DateOnly date)
+    public async Task<IEnumerable<Message>> GetLastMessagesUpToDateAsync(Guid ChatId, DateTime date)
     {
+        var lastMessage = await _context.Messages
+            .AsNoTracking<Message>()
+            .Where(m => m.Chat.ChatId.Equals(ChatId) && m.DateTimeCreated.Date <= date.ToUniversalTime())
+            .OrderByDescending(m => m.DateTimeCreated)
+            .FirstOrDefaultAsync();
+
+        if (lastMessage is null) return Enumerable.Empty<Message>();
+
         return await _context.Messages
-            .Where(m => m.DateTimeCreated.Date.Equals(date))
-            .OrderBy(m => m.DateTimeCreated)
+            .Where(m => m.DateTimeCreated.Date.Equals(lastMessage.DateTimeCreated.Date))
             .Include(m => m.Chat)
             .Include(m => m.Author)
+            .OrderByDescending(m => m.DateTimeCreated)
             .ToListAsync();
     }
 

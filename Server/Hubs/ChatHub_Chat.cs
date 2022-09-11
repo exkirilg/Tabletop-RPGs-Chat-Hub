@@ -1,4 +1,6 @@
-﻿namespace Server.Hubs;
+﻿using Microsoft.AspNetCore.SignalR;
+
+namespace Server.Hubs;
 
 public partial class ChatHub
 {
@@ -12,6 +14,11 @@ public partial class ChatHub
         _state.GetConnectionSettings(Context.ConnectionId).AddMember(member);
 
         await Groups.AddToGroupAsync(Context.ConnectionId, member.Chat.Name);
+
+        await Clients.Client(Context.ConnectionId).SendAsync(
+            ReceiveMessagesMethod,
+            member.Chat.ChatId,
+            (await _messagesServices.GetLastMessagesUpToDateAsync(member.Chat.ChatId, DateTime.Now)).Select(msg => msg.ToDTO()));
     }
 
     public async Task LeaveChatRequest(Guid memberId)
