@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace DataAccess.Migrations.ChatHub
 {
     [DbContext(typeof(ChatHubContext))]
-    [Migration("20220911095728_Initial")]
+    [Migration("20220911200948_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -52,6 +52,32 @@ namespace DataAccess.Migrations.ChatHub
                         .IsUnique();
 
                     b.ToTable("Chats");
+                });
+
+            modelBuilder.Entity("Domain.Models.DiceRoll", b =>
+                {
+                    b.Property<Guid>("DiceRollId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Dice")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<Guid?>("MessageId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("Position")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Result")
+                        .HasColumnType("integer");
+
+                    b.HasKey("DiceRollId");
+
+                    b.HasIndex("MessageId");
+
+                    b.ToTable("DiceRolls");
                 });
 
             modelBuilder.Entity("Domain.Models.Member", b =>
@@ -112,6 +138,13 @@ namespace DataAccess.Migrations.ChatHub
                     b.ToTable("Messages");
                 });
 
+            modelBuilder.Entity("Domain.Models.DiceRoll", b =>
+                {
+                    b.HasOne("Domain.Models.Message", null)
+                        .WithMany("DicePoolRoll")
+                        .HasForeignKey("MessageId");
+                });
+
             modelBuilder.Entity("Domain.Models.Member", b =>
                 {
                     b.HasOne("Domain.Models.Chat", "Chat")
@@ -138,6 +171,11 @@ namespace DataAccess.Migrations.ChatHub
                     b.Navigation("Author");
 
                     b.Navigation("Chat");
+                });
+
+            modelBuilder.Entity("Domain.Models.Message", b =>
+                {
+                    b.Navigation("DicePoolRoll");
                 });
 #pragma warning restore 612, 618
         }

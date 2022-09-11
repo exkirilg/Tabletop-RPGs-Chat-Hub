@@ -69,6 +69,26 @@ namespace DataAccess.Migrations.ChatHub
                         principalColumn: "MemberId");
                 });
 
+            migrationBuilder.CreateTable(
+                name: "DiceRolls",
+                columns: table => new
+                {
+                    DiceRollId = table.Column<Guid>(type: "uuid", nullable: false),
+                    Position = table.Column<int>(type: "integer", nullable: false),
+                    Dice = table.Column<string>(type: "text", nullable: false),
+                    Result = table.Column<int>(type: "integer", nullable: false),
+                    MessageId = table.Column<Guid>(type: "uuid", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_DiceRolls", x => x.DiceRollId);
+                    table.ForeignKey(
+                        name: "FK_DiceRolls_Messages_MessageId",
+                        column: x => x.MessageId,
+                        principalTable: "Messages",
+                        principalColumn: "MessageId");
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_Chats_ChatId",
                 table: "Chats",
@@ -80,6 +100,11 @@ namespace DataAccess.Migrations.ChatHub
                 table: "Chats",
                 column: "Name",
                 unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_DiceRolls_MessageId",
+                table: "DiceRolls",
+                column: "MessageId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Members_ChatId",
@@ -111,6 +136,9 @@ namespace DataAccess.Migrations.ChatHub
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropTable(
+                name: "DiceRolls");
+
             migrationBuilder.DropTable(
                 name: "Messages");
 

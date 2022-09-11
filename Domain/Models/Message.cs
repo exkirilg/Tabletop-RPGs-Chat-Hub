@@ -1,5 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
+using TRPG.DiceRoller;
+using TRPG.DiceRoller.Adapters;
+using TRPG.DiceRoller.RollsResults;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace Domain.Models;
 
@@ -17,7 +21,9 @@ public class Message : IComparable<Message>
     [Required]
     public DateTime DateTimeCreated { get; init; } = DateTime.UtcNow;
 
-    public string TextContent { get; set; }
+    public string TextContent { get; init; }
+
+    public List<DiceRoll> DicePoolRoll { get; init; } = new();
 
     private Message()
     {
@@ -31,6 +37,16 @@ public class Message : IComparable<Message>
         Chat = chat;
         TextContent = textContent;
         Author = author;
+
+        if (textContent.StartsWith("/roll"))
+        {
+            var diceRoller = new DiceRoller(new RandomIntAdapter());
+            DicePoolRoll = diceRoller.RollDicePoolByExpression(textContent).Results
+                .Select(r => new DiceRoll(r.Id, $"d{r.Dice.NumberOfSides}", r.Value))
+                .ToList();
+
+            TextContent = string.Empty;
+        }
     }
 
     public MessageDTO ToDTO()
@@ -42,7 +58,8 @@ public class Message : IComparable<Message>
             Author?.Nickname,
             Author is null,
             DateTimeCreated,
-            TextContent);
+            TextContent,
+            DicePoolRoll.Select(d => d.ToDTO()).ToList());
     }
 
     public int CompareTo(Message? other)

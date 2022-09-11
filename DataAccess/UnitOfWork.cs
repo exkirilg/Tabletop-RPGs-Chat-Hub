@@ -9,6 +9,7 @@ public class UnitOfWork : IUnitOfWork
     public IChatRepository ChatRepository { get; }
     public IMemberRepository MemberRepository { get; }
     public IMessageRepository MessageRepository { get; }
+	public IDiceRollRepository DiceRollRepository { get; }
 
     public UnitOfWork(ChatHubContext context)
 	{
@@ -17,6 +18,7 @@ public class UnitOfWork : IUnitOfWork
         ChatRepository = new ChatRepository(_context);
         MemberRepository = new MemberRepository(_context);
         MessageRepository = new MessageRepository(_context);
+		DiceRollRepository = new DiceRollRepository(_context);
     }
 
 	public async Task CompleteAsync()

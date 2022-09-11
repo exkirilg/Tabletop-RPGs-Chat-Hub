@@ -22,6 +22,7 @@ public class MessageRepository : Repository<Message>, IMessageRepository
             .Where(m => m.DateTimeCreated.Date.Equals(lastMessage.DateTimeCreated.Date))
             .Include(m => m.Chat)
             .Include(m => m.Author)
+            .Include(m => m.DicePoolRoll)
             .OrderByDescending(m => m.DateTimeCreated)
             .ToListAsync();
     }
@@ -32,6 +33,7 @@ public class MessageRepository : Repository<Message>, IMessageRepository
             .OrderBy(m => m.DateTimeCreated)
             .Include(m => m.Chat)
             .Include(m => m.Author)
+            .Include(m => m.DicePoolRoll)
             .ToListAsync();
     }
     public override async Task<Message> GetByIdAsync(Guid id)
@@ -56,6 +58,7 @@ public class MessageRepository : Repository<Message>, IMessageRepository
             .OrderBy(m => m.DateTimeCreated)
             .Include(m => m.Chat)
             .Include(m => m.Author)
+            .Include(m => m.DicePoolRoll)
             .ToListAsync();
     }
     public override async Task<Message?> GetFirstOrDefaultByExpression(Expression<Func<Message, bool>> predicate)
@@ -64,6 +67,7 @@ public class MessageRepository : Repository<Message>, IMessageRepository
             .Where(predicate)
             .Include(m => m.Chat)
             .Include(m => m.Author)
+            .Include(m => m.DicePoolRoll)
             .FirstOrDefaultAsync();
     }
 }
