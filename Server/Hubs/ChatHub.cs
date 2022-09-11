@@ -10,17 +10,20 @@ public partial class ChatHub : Hub
     private readonly IStatisticsServices _statisticsServices;
     private readonly IChatServices _chatServices;
     private readonly IMembersServices _membersServices;
+    private readonly IMessagesServices _messagesServices;
 
     private readonly ChatHubBroadcast _broadcast;
     private readonly State _state;
 
     public ChatHub(
-        IStatisticsServices statisticsServices, IChatServices chatServices, IMembersServices membersServices,
+        IStatisticsServices statisticsServices, IChatServices chatServices,
+        IMembersServices membersServices, IMessagesServices messagesServices,
         ChatHubBroadcast broadcast, State state)
     {
         _statisticsServices = statisticsServices;
         _chatServices = chatServices;
         _membersServices = membersServices;
+        _messagesServices = messagesServices;
         _broadcast = broadcast;
         _state = state;
     }

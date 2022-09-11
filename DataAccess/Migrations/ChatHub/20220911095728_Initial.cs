@@ -49,7 +49,7 @@ namespace DataAccess.Migrations.ChatHub
                 {
                     MessageId = table.Column<Guid>(type: "uuid", nullable: false),
                     ChatId = table.Column<Guid>(type: "uuid", nullable: false),
-                    AuthorMemberId = table.Column<Guid>(type: "uuid", nullable: false),
+                    AuthorMemberId = table.Column<Guid>(type: "uuid", nullable: true),
                     DateTimeCreated = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     TextContent = table.Column<string>(type: "text", nullable: false)
                 },
@@ -66,8 +66,7 @@ namespace DataAccess.Migrations.ChatHub
                         name: "FK_Messages_Members_AuthorMemberId",
                         column: x => x.AuthorMemberId,
                         principalTable: "Members",
-                        principalColumn: "MemberId",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "MemberId");
                 });
 
             migrationBuilder.CreateIndex(

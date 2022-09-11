@@ -20,9 +20,9 @@ public class ChatHubBroadcast
 
         _notificationsServices.StatisticsChanged += OnStatisticsChanged;
         _notificationsServices.ChatsChanged += OnChatsChanged;
-        _notificationsServices.MemberCreated += OnMemberCreated;
+        _notificationsServices.ChatRemoved += OnChatRemoved;
         _notificationsServices.MemberUpdated += OnMemberUpdated;
-        _notificationsServices.MemberRemoved += OnMemberRemoved;
+        _notificationsServices.NewMessage += OnNewMessage;
     }
 
     private async void OnStatisticsChanged(object? sender, StatisticsChangedEventArgs e)
@@ -45,17 +45,25 @@ public class ChatHubBroadcast
             }
         }
     }
-    private async void OnMemberCreated(object? sender, MemberChangedEventArgs e)
+    private async void OnChatRemoved(object? sender, ChatRemovedEventArgs e)
     {
-        // TODO:
+        _state.RemoveChat(e.Chat.ChatId);
+        await _hubContext.Clients.Group(e.Chat.Name).SendAsync(ChatHub.ReceiveChatHasBeenRemovedMethod, e.Chat.ToDTO());
     }
     private void OnMemberUpdated(object? sender, MemberChangedEventArgs e)
     {
         _state.RemoveMember(e.Member.MemberId);
     }
-    private async void OnMemberRemoved(object? sender, MemberChangedEventArgs e)
+    private async void OnNewMessage(object? sender, NewMessageEventArgs e)
     {
-        // TODO:
+        if (e.Message.Author is null)
+        {
+            await SendSystemMessage(e.Message);
+        }
+        else
+        {
+            await SendUserMessage(e.Message);
+        }
     }
 
     private async Task SendChatsInfoToUnauthenticatedUser(string connectionId, IEnumerable<Chat> chats, string? search)
@@ -94,5 +102,14 @@ public class ChatHubBroadcast
     private async Task SendOthersChatsInfo(string connectionId, IEnumerable<ChatDTO> chatsInfo)
     {
         await _hubContext.Clients.Client(connectionId).SendAsync(ChatHub.ReceiveOthersChatsInfoMethod, chatsInfo);
+    }
+
+    private async Task SendUserMessage(Message message)
+    {
+        await _hubContext.Clients.Group(message.Chat.Name).SendAsync(ChatHub.ReceiveUserMessageMethod, message.ToDTO());
+    }
+    private async Task SendSystemMessage(Message message)
+    {
+        await _hubContext.Clients.Group(message.Chat.Name).SendAsync(ChatHub.ReceiveSystemMessageMethod, message.ToDTO());
     }
 }

@@ -12,8 +12,7 @@ public class Message : IComparable<Message>
     [Required]
     public Chat Chat { get; init; }
 
-    [Required]
-    public Member Author { get; init; }
+    public Member? Author { get; init; }
 
     [Required]
     public DateTime DateTimeCreated { get; init; } = DateTime.UtcNow;
@@ -23,16 +22,26 @@ public class Message : IComparable<Message>
     private Message()
     {
     }
-    public Message(Chat chat, Member author, string textContent)
+    public Message(Chat chat, string textContent, Member? author = null)
     {
         ArgumentNullException.ThrowIfNull(chat, nameof(chat));
-        ArgumentNullException.ThrowIfNull(author, nameof(author));
 
         if (string.IsNullOrWhiteSpace(textContent)) throw new ArgumentNullException(nameof(textContent));
 
         Chat = chat;
-        Author = author;
         TextContent = textContent;
+        Author = author;
+    }
+
+    public MessageDTO ToDTO()
+    {
+        return new MessageDTO(
+            MessageId,
+            Chat.ChatId,
+            Author?.Nickname,
+            Author is null,
+            DateTimeCreated,
+            TextContent);
     }
 
     public int CompareTo(Message? other)

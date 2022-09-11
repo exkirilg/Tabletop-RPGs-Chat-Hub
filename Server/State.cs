@@ -1,4 +1,5 @@
-﻿using Server.Hubs;
+﻿using Domain.Models;
+using Server.Hubs;
 
 namespace Server;
 
@@ -30,6 +31,13 @@ public class State
         _connectionsSettings.Remove(connectionId);
     }
     
+    public void RemoveChat(Guid chatId)
+    {
+        foreach (var settings in _connectionsSettings.Values)
+        {
+            settings.RemoveChat(chatId);
+        }
+    }
     public void RemoveMember(Guid memberId)
     {
         foreach (var settings in _connectionsSettings.Values)

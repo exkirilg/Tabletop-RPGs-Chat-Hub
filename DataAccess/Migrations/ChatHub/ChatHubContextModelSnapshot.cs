@@ -85,7 +85,7 @@ namespace DataAccess.Migrations.ChatHub
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<Guid>("AuthorMemberId")
+                    b.Property<Guid?>("AuthorMemberId")
                         .HasColumnType("uuid");
 
                     b.Property<Guid>("ChatId")
@@ -125,9 +125,7 @@ namespace DataAccess.Migrations.ChatHub
                 {
                     b.HasOne("Domain.Models.Member", "Author")
                         .WithMany()
-                        .HasForeignKey("AuthorMemberId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("AuthorMemberId");
 
                     b.HasOne("Domain.Models.Chat", "Chat")
                         .WithMany()

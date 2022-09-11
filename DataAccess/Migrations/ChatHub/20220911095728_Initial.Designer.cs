@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace DataAccess.Migrations.ChatHub
 {
     [DbContext(typeof(ChatHubContext))]
-    [Migration("20220906203010_Initial")]
+    [Migration("20220911095728_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -87,7 +87,7 @@ namespace DataAccess.Migrations.ChatHub
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<Guid>("AuthorMemberId")
+                    b.Property<Guid?>("AuthorMemberId")
                         .HasColumnType("uuid");
 
                     b.Property<Guid>("ChatId")
@@ -127,9 +127,7 @@ namespace DataAccess.Migrations.ChatHub
                 {
                     b.HasOne("Domain.Models.Member", "Author")
                         .WithMany()
-                        .HasForeignKey("AuthorMemberId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("AuthorMemberId");
 
                     b.HasOne("Domain.Models.Chat", "Chat")
                         .WithMany()

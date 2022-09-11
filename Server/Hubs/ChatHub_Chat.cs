@@ -2,6 +2,8 @@
 
 public partial class ChatHub
 {
+    public const string ReceiveChatHasBeenRemovedMethod = "ReceiveChatHasBeenRemoved";
+
     #region Requests
 
     public async Task JoinChatRequest(Guid memberId)

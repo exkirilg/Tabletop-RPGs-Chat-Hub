@@ -4,11 +4,15 @@ namespace Server.Hubs;
 
 public class ConnectionSettings
 {
-    private readonly List<Member> _members = new();
+    private List<Member> _members = new();
 
     public string? UserName { get; set; }
     public string? ChatSearch { get; set; }
     
+    public void RemoveChat(Guid chatId)
+    {
+        _members = _members.Where(m => m.Chat.ChatId.Equals(chatId) == false).ToList();
+    }
     public IEnumerable<Member> GetMembers()
     {
         return _members.ToList();
@@ -23,9 +27,6 @@ public class ConnectionSettings
     public void RemoveMember(Guid memberId)
     {
         var member = _members.Where(m => m.MemberId.Equals(memberId)).FirstOrDefault();
-        if (member is not null)
-        {
-            _members.Remove(member);
-        }
+        if (member is not null) _members.Remove(member);
     }
 }

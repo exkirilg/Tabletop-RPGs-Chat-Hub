@@ -91,6 +91,7 @@ public class ChatServices : IChatServices
         await _unitOfWork.ChatRepository.RemoveByIdAsync(chatId);
         await _unitOfWork.CompleteAsync();
 
+        _notificationsServices.InvokeChatRemoved(this, new ChatRemovedEventArgs(chat));
         await OnChatsChanged();
     }
 

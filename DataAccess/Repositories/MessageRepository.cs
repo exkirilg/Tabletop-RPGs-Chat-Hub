@@ -8,11 +8,21 @@ public class MessageRepository : Repository<Message>, IMessageRepository
 	{
 	}
 
+    public async Task<IEnumerable<Message>> GetMessagesOnDate(DateOnly date)
+    {
+        return await _context.Messages
+            .Where(m => m.DateTimeCreated.Date.Equals(date))
+            .OrderBy(m => m.DateTimeCreated)
+            .Include(m => m.Chat)
+            .Include(m => m.Author)
+            .ToListAsync();
+    }
+
     public override async Task<IEnumerable<Message>> GetAllAsync()
     {
         return await _context.Messages
+            .OrderBy(m => m.DateTimeCreated)
             .Include(m => m.Chat)
-            .OrderBy(m => m)
             .Include(m => m.Author)
             .ToListAsync();
     }
@@ -35,8 +45,8 @@ public class MessageRepository : Repository<Message>, IMessageRepository
     {
         return await _context.Messages
             .Where(predicate)
+            .OrderBy(m => m.DateTimeCreated)
             .Include(m => m.Chat)
-            .OrderBy(m => m)
             .Include(m => m.Author)
             .ToListAsync();
     }

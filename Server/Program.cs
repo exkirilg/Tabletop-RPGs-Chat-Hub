@@ -126,6 +126,7 @@ builder.Services.AddScoped<IStatisticsServices, StatisticsServices>();
 builder.Services.AddScoped<IIdentityServices, IdentityServices>();
 builder.Services.AddScoped<IChatServices, ChatServices>();
 builder.Services.AddScoped<IMembersServices, MembersServices>();
+builder.Services.AddScoped<IMessagesServices, MessagesServices>();
 
 builder.Services.AddSingleton<ChatHubBroadcast>();
 builder.Services.AddSingleton<State>();

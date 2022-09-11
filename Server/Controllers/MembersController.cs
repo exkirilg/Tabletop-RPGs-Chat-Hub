@@ -39,7 +39,7 @@ public class MembersController : ControllerBase
     [HttpGet()]
     public async Task<IActionResult> GetUserMembers()
     {
-        return Ok((await _services.GetUserMembers(User.Identity!.Name!)).Select(m => m.ToDTO()));
+        return Ok((await _services.GetUserMembersAsync(User.Identity!.Name!)).Select(m => m.ToDTO()));
     }
 
     /// <summary>
