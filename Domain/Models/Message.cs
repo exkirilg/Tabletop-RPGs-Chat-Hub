@@ -42,7 +42,7 @@ public class Message : IComparable<Message>
         {
             var diceRoller = new DiceRoller(new RandomIntAdapter());
             DicePoolRoll = diceRoller.RollDicePoolByExpression(textContent).Results
-                .Select(r => new DiceRoll(r.Id, $"d{r.Dice.NumberOfSides}", r.Value))
+                .Select(r => new DiceRoll(this, r.Id, $"d{r.Dice.NumberOfSides}", r.Value))
                 .ToList();
 
             TextContent = string.Empty;
