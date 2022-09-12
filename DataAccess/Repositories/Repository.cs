@@ -52,7 +52,7 @@ public abstract class Repository<T> : IRepository<T> where T : class, IComparabl
         await _context.Set<T>().AddRangeAsync(entities);
     }
 
-    public async Task RemoveByIdAsync(Guid id)
+    public virtual async Task RemoveByIdAsync(Guid id)
     {
         _context.Set<T>().Remove(await GetByIdAsync(id));
     }

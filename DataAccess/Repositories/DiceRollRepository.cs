@@ -1,4 +1,5 @@
-﻿using System.Linq.Expressions;
+﻿using Domain.Models;
+using System.Linq.Expressions;
 
 namespace DataAccess.Repositories;
 
@@ -12,6 +13,7 @@ public class DiceRollRepository : Repository<DiceRoll>, IDiceRollRepository
     {
         return await _context.DiceRolls
             .OrderBy(r => r.Position)
+            .Include(r => r.Message)
             .ToListAsync();
     }
     public override async Task<DiceRoll> GetByIdAsync(Guid id)
@@ -19,6 +21,8 @@ public class DiceRollRepository : Repository<DiceRoll>, IDiceRollRepository
         var diceRoll = await _context.DiceRolls.FindAsync(id);
 
         if (diceRoll is null) throw new Exception($"There is no {nameof(diceRoll)} with id: {id}");
+        
+        await _context.Entry(diceRoll).Reference(nameof(diceRoll.Message)).LoadAsync();
 
         return diceRoll;
     }
@@ -27,6 +31,7 @@ public class DiceRollRepository : Repository<DiceRoll>, IDiceRollRepository
     {
         return await _context.DiceRolls
             .Where(predicate)
+            .Include(r => r.Message)
             .OrderBy(r => r.Position)
             .ToListAsync();
     }
@@ -34,6 +39,7 @@ public class DiceRollRepository : Repository<DiceRoll>, IDiceRollRepository
     {
         return await _context.DiceRolls
             .Where(predicate)
+            .Include(r => r.Message)
             .FirstOrDefaultAsync();
     }
 }

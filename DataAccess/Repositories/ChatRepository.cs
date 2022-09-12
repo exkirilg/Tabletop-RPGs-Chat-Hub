@@ -67,4 +67,15 @@ public class ChatRepository : Repository<Chat>, IChatRepository
     {
         return await _context.Chats.AnyAsync(chat => chat.Name.Equals(name));
     }
+
+    public async override Task RemoveByIdAsync(Guid id)
+    {
+        var chat = await GetByIdAsync(id);
+
+        _context.DiceRolls.RemoveRange(await _context.DiceRolls.Where(r => r.Message.Chat.ChatId.Equals(id)).ToListAsync());
+        _context.Messages.RemoveRange(await _context.Messages.Where(m => m.Chat.ChatId.Equals(id)).ToListAsync());
+        _context.Members.RemoveRange(await _context.Members.Where(m => m.Chat.ChatId.Equals(id)).ToListAsync());
+
+        _context.Remove(chat);
+    }
 }

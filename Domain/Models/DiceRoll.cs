@@ -4,6 +4,9 @@ namespace Domain.Models;
 
 public class DiceRoll : IComparable<DiceRoll>
 {
+    [Required]
+    public Message Message { get; init; }
+
     [Key]
     public Guid DiceRollId { get; init; } = Guid.NewGuid();
 
@@ -16,8 +19,13 @@ public class DiceRoll : IComparable<DiceRoll>
     [Required]
     public int Result { get; init; }
 
-    public DiceRoll(int position, string dice, int result)
+    public DiceRoll()
     {
+
+    }
+    public DiceRoll(Message message, int position, string dice, int result)
+    {
+        Message = message;
         Position = position;
         Dice = dice;
         Result = result;
